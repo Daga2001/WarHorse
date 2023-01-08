@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./css/index.css">
+  <title>WarHorses</title>
+</head>
+<body>
+
+  <div class="background"></div>
+  
+  <div class="menu">
+    <div class="menu__logo">
+      <img src="./images/logo.png" alt="game_logo">
+    </div>
+    <div class="menu__start"></div>
+    <div class="menu_transparent">
+      <ul>
+        <li style="--i:0.1s;"><h3>Dificultad</h3></li>
+        <li style="--i:0.1s;"><a href="./game.html">Fácil</a></li>
+        <li style="--i:0.1s;"><a href="./game.html">Normal</a></li>
+        <li style="--i:0.1s;"><a href="./game.html">Difícil</a></li>
+      </ul>
+    </div>
+    <div class="menu__buttons">
+      <a class="button">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        Credits
+      </a>
+    </div>
+  </div>
+
+  <script>
+    let globalMap;
+  </script>
+
+  <script>
+    let menu__start = document.querySelector('.menu__start');
+    menu__start.onclick = function() {
+      menu__start.classList.toggle('active');
+    }
+  </script>
+
+</body>
+</html>
