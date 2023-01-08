@@ -62,14 +62,16 @@ let initWorld =
 
 // Horse's player 1
 let h1 = {
-    posx: 0,
-    posy: 0
+    x: 0,
+    y: 0,
+    isTurn: true,
 }
 
 // Horse's player 2
 let h2 = {
-    posx: 0,
-    posy: 0
+    x: 0,
+    y: 0,
+    isTurn: false,
 }
 
 // Tests
@@ -79,27 +81,6 @@ let sol = ["up","right","right","right","right","down","right","right","right","
 //====================================================================================
 // DECLARATION OF FUNCTIONS OR METHODS
 //====================================================================================
-
-/**
- * sleeps the program while is executing with a given delay in miliseconds.
- * @param {Number} delay 
- */
-
-function sleep(delay) {
-    var start = new Date().getTime();
-    while (new Date().getTime() < start + delay);
-}
-
-/**
- * Makes a deep copy of an object. 
- * A deep copy of an object is a copy whose properties do not share the same references.
- * @param {*} object 
- * @returns 
- */
-
-function deep_copy(object) {
-    return JSON.parse(JSON.stringify(object));
-}
 
 /**
  * Abstracts all imposible movements from mario's position.
@@ -161,6 +142,53 @@ function paintSquare(x,y,width,height,color) {
     ctx.fillRect(x,y,width,height)      //create rectangle
     ctx.strokeRect(x,y,width,height)    //create rectangle's borders
 }
+
+/**
+ * Abstracts all posible movements from horse's position.
+ * @param {Object} horse 
+ * @param {Object} world
+ * @returns List
+ */
+// (5,9) -> 1,2,3 X
+
+function possibleMovements(horse, world) {
+    let movements = [];
+    // 1
+    if (horse.x-2 >= 0 && horse.y-1 >= 0 && (world[horse.y-1][horse.x-2] == 0 || world[horse.y-1][horse.x-2] == 5)) {
+        movements.push(1);
+    }
+    // 2
+    if (horse.x-1 >= 0 && horse.y-2 >= 0 && (world[horse.y-2][horse.x-1] == 0 || world[horse.y-2][horse.x-1] == 5)) {
+        movements.push(2);
+    }
+    // 3
+    if (horse.x+1 < world.length && horse.y-2 >= 0 && (world[horse.y-2][horse.x+1] == 0 || world[horse.y-2][horse.x+1] == 5)) {
+        movements.push(3);
+    }
+    // 4
+    if (horse.x+2 < world.length && horse.y-1 >= 0 && (world[horse.y-1][horse.x+2] == 0 || world[horse.y-1][horse.x+2] == 5)) {
+        movements.push(4);
+    }
+    // 5
+    if (horse.x+2 < world.length && horse.y+1 < world.length && (world[horse.y+1][horse.x+2] == 0 || world[horse.y+1][horse.x+2] == 5)) {
+        movements.push(5);
+    }
+    // 6
+    if (horse.x+1 < world.length && horse.y+2 < world.length && (world[horse.y+2][horse.x+1] == 0 || world[horse.y+2][horse.x+1] == 5)) {
+        movements.push(6);
+    }
+    // 7
+    if (horse.x-1 >= 0 && horse.y+2 < world.length && (world[horse.y+2][horse.x-1] == 0 || world[horse.y+2][horse.x-1] == 5)) {
+        movements.push(7);
+    }
+    // 8
+    if (horse.x-2 >= 0 && horse.y+1 < world.length && (world[horse.y+1][horse.x-2] == 0 || world[horse.y+1][horse.x-2] == 0)) {
+        movements.push(8);
+    }
+    return movements;
+}
+
+console.log(possibleMovements({ x:5, y:9 }, world));
 
 /**
  * Draws an image in canvas with a given source, which means the pic's name.
@@ -271,6 +299,46 @@ function makeWorld(world) {
 }
 
 /**
+ * Paints a sketch of possible movements for player 1.
+ * @param {Object} horse 
+ * @param {Object} world 
+ */
+
+function paintPossibleMovements(horse, world) {
+    let movements = possibleMovements(horse, world);
+    while(movements.length > 0) {
+        let move = movements.pop();
+        if (move == 1) {
+            paintSquare((horse.x-2)*squareSize,(horse.y-1)*squareSize,squareSize,squareSize,"#4adeff");
+        }
+        else if (move == 2) {
+            paintSquare((horse.x-1)*squareSize,(horse.y-2)*squareSize,squareSize,squareSize,"#4adeff");
+        }
+        else if (move == 3) {
+            paintSquare((horse.x+1)*squareSize,(horse.y-2)*squareSize,squareSize,squareSize,"#4adeff");
+        }
+        else if (move == 4) {
+            paintSquare((horse.x+2)*squareSize,(horse.y-1)*squareSize,squareSize,squareSize,"#4adeff");
+        }
+        else if (move == 5) {
+            paintSquare((horse.x+2)*squareSize,(horse.y+1)*squareSize,squareSize,squareSize,"#4adeff");
+        }
+        else if (move == 6) {
+            paintSquare((horse.x+1)*squareSize,(horse.y+2)*squareSize,squareSize,squareSize,"#4adeff");
+        }
+        else if (move == 7) {
+            paintSquare((horse.x-1)*squareSize,(horse.y+2)*squareSize,squareSize,squareSize,"#4adeff");
+        }
+        else if (move == 8) {
+            paintSquare((horse.x-2)*squareSize,(horse.y+1)*squareSize,squareSize,squareSize,"#4adeff");
+        }
+        else {
+            throw `There's an invalid item in movements array: ${move}`;
+        }
+    }
+}
+
+/**
  * Draws and paints all the magnificence of the mario's world.
  * @param {Object} world 
  * @returns
@@ -291,14 +359,14 @@ function paintWorld(world) {
                 paintSquare(x*squareSize,y*squareSize,squareSize,squareSize,"white")     
             }
             else if (world[y][x] == 1){
-                h1.posx = x
-                h1.posy = y
-                paintHorse(h1,"#fa4b2a")
+                h1.x = x
+                h1.y = y
+                paintHorse(h1,"#5bfe3e")
             }
             else if (world[y][x] == 2){
-                h2.posx = x
-                h2.posy = y
-                paintHorse(h2,"#5bfe3e")
+                h2.x = x
+                h2.y = y
+                paintHorse(h2,"#fa4b2a")
             }
             else if (world[y][x] == 3){
                 paintSquare(x*squareSize,y*squareSize,squareSize,squareSize,"#fa4b2a")
@@ -315,6 +383,7 @@ function paintWorld(world) {
             }
         }
     }
+    paintPossibleMovements(h1, world);
 }
 
 /**
@@ -324,8 +393,8 @@ function paintWorld(world) {
  */
 
 function paintHorse(horse, color) {
-    paintSquare(horse.posx*squareSize,horse.posy*squareSize,squareSize,squareSize,color)
-    showImage(horse.posx*squareSize,horse.posy*squareSize,squareSize,squareSize,"horse")
+    paintSquare(horse.x*squareSize,horse.y*squareSize,squareSize,squareSize,color)
+    showImage(horse.x*squareSize,horse.y*squareSize,squareSize,squareSize,"horse")
 }
 
 /**
@@ -415,11 +484,14 @@ try{
     // hereWeGo.play()
 
     // sets the world
-    console.log(world);
     makeWorld(world);
-    console.log(world);
+
     // The world is painted at the beginning
     paintWorld(world);
+    console.log(h1);
+    console.log(h2);
+    console.log(world);
+    console.log(possibleMovements(h1,world));
 
     // When mario starts to move
     // let intervalID = setInterval(() => {

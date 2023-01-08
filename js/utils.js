@@ -133,6 +133,15 @@ export function euclidianDistance(a, b){
   return manhattanDist(a,b) / 2;
 }
 
+/**
+ * Checks if a point is inside a rectangle;
+ * @param {Object} point
+ * @param {Object} rect 
+ */
+
+export function overlapsRect(point, rect) {
+    return point.x >= rect.x && point.x <= rect.x + width && point.y <= rect.y + height && point.y >= rect.y;
+}
 
 /**
  * Converts the given solution in a list readable for mario to start moving.
