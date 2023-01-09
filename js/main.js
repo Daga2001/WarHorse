@@ -534,12 +534,19 @@ function updateStatistics() {
  */
 
 function endGame() {
-    computingTime = Math.abs(endTime-startTime);
+    // computingTime = Math.abs(endTime-startTime);
     // hide container and show the end screen.
+    let endTitle = document.getElementById('end-title');
     let endScreen = document.getElementById('end-screen');
     let container = document.getElementById('container');
     endScreen.style.display = `flex`;
     container.style.display = `none`;
+    if (h1.nBoxes > h2.nBoxes) {
+        endTitle.textContent = `Player 1 Won!, with ${h2.nBoxes} boxes`;
+    }
+    else {
+        endTitle.textContent = `Player 2 Won!, with ${h2.nBoxes} boxes`;
+    }
     // show the statistics too.
     updateStatistics();
 }
@@ -549,13 +556,46 @@ function endGame() {
  */
 
 function restartGame() {
-    world = deep_copy(initWorld);
-    
+    world = util.deep_copy(initWorld);
+    makeWorld(world);
     paintWorld(world);
+    h1.isTurn = false;
+    h1.selectedMove = 0;
+    h1.nBoxes = 1;
+    h1.possibleMovements = [];
+    h2.isTurn = true;
+    h2.selectedMove = 0;
+    h2.nBoxes = 1;
+    h2.possibleMovements = [];
     let endScreen = document.getElementById('end-screen');
     let container = document.getElementById('container');
     endScreen.style.display = `none`;
     container.style.display = `flex`;
+    updateStatistics();
+    let intervalID = setInterval(() => {
+        console.log(`is h2 turn: ${h2.isTurn}`);
+        if (h2.isTurn) {
+            possibleMovements(h2, world);
+            if (h2.possibleMovements.length == 0) {
+                clearInterval(intervalID);
+                endGame();
+            }
+            else {
+                moveHorse(h2, 2);
+                h2.isTurn = false;
+                h1.isTurn = true;
+                paintPossibleMovements(h1, world);
+                if (h1.possibleMovements.length == 0) {
+                    clearInterval(intervalID);
+                    endGame();
+                }
+                else{
+                    h1.selectedMove = 0;
+                    paintSelectedField(h1);
+                }
+            }            
+        }
+    }, 1000);
 }
 
 /**
@@ -593,23 +633,31 @@ try{
         console.log(`is h2 turn: ${h2.isTurn}`);
         if (h2.isTurn) {
             possibleMovements(h2, world);
-            moveHorse(h2, 2);
-            h2.isTurn = false;
-            h1.isTurn = true;
-            paintPossibleMovements(h1, world);
-            h1.selectedMove = 0;
-            paintSelectedField(h1);
+            if (h2.possibleMovements.length == 0) {
+                clearInterval(intervalID);
+                endGame();
+            }
+            else {
+                moveHorse(h2, 2);
+                h2.isTurn = false;
+                h1.isTurn = true;
+                paintPossibleMovements(h1, world);
+                if (h1.possibleMovements.length == 0) {
+                    clearInterval(intervalID);
+                    endGame();
+                }
+                else{
+                    h1.selectedMove = 0;
+                    paintSelectedField(h1);
+                }
+            }            
         }
-        // if(mario.posx == princess.posx && mario.posy == princess.posy) {
-        //     clearInterval(intervalID);
-        //     endGame();
-        // }
     }, 1000)    
 
     // Button listener
-    // restartButton.addEventListener('mousedown', () => {
-    //     restartGame();
-    // })
+    restartButton.addEventListener('mousedown', () => {
+        restartGame();
+    })
 
     // When a mouse button is pressed.
     canvas.addEventListener('mousedown', ( event ) => {        

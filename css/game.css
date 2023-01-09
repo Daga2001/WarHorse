@@ -27,7 +27,7 @@ body {
 }
 
 .container {
-  display: flex;
+  display: none;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -159,7 +159,7 @@ body {
 }
 
 div.end-screen {
-  display: none;
+  display: flex;
   background-color: rgba(0,0,0,0.64);
   width: 100%;
   height: 100%;
@@ -172,11 +172,11 @@ div.screen-pop-up {
   margin: 0 auto;
   top: 9%;
   width: 60%;
-  height: 40%;
+  height: 80vh;
   text-align: center;
-  background: rgb(255,134,3);
-  background: radial-gradient(circle, rgba(255,134,3,1) 0%, rgba(255,205,0,1) 46%, rgba(232,45,45,1) 100%);
-  border: 10px groove #f11e1e;
+  background: rgb(142,45,232);
+  background: linear-gradient(27deg, rgba(142,45,232,1) 0%, rgba(22,52,244,1) 0%, rgba(15,115,227,1) 31%, rgba(18,8,208,1) 62%, rgba(0,125,255,1) 86%, rgba(0,224,255,1) 100%);
+  border: 10px groove #00f7ff;
   border-radius: 30px;
 }
 
@@ -216,11 +216,11 @@ div.end-bottom {
 
 .end-btn {
   position: relative;
-  background-color: rgba(255,128,0,1);
-  border: 5px groove #f11e1e;
+  background-color: #1d98f6;
+  border: 5px groove #00f7ff;
   padding: 0px 10px;
   text-decoration: none;
-  color: #850303;
+  color: #03f7ff;
   border-radius: 30px;
   margin: 0 auto;
   font-size: 25px;
@@ -231,8 +231,7 @@ div.end-bottom {
 
 .end-btn:hover {
   cursor: crosshair;
-  background: rgb(255,16,0);
-  background: linear-gradient(315deg, rgba(255,16,0,1) 3%, rgba(255,128,0,1) 12%, rgba(255,252,0,1) 29%, rgba(196,246,24,1) 45%, rgba(2,255,239,0.6362920168067228) 66%, rgba(1,30,145,1) 78%, rgba(182,27,247,1) 90%);
-  color: rgb(255,16,0);
-  border-color: rgb(255,16,0);
+  background: #40acff;
+  color: #0b959a;
+  border-color: #00f7ff;
 }
