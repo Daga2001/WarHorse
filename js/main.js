@@ -71,18 +71,18 @@ let cursor = {
 let h1 = {
     x: 0,
     y: 0,
-    isTurn: true,
+    isTurn: false,
     possibleMovements: [],
-    selectedMove: null, // index of possibleMovements array
+    selectedMove: 0, // index of possibleMovements array
 }
 
 // Horse's player 2
 let h2 = {
     x: 0,
     y: 0,
-    isTurn: false,
+    isTurn: true,
     possibleMovements: [],
-    selectedMove: null, // index of possibleMovements array
+    selectedMove: 0, // index of possibleMovements array
 }
 
 // Tests
@@ -92,50 +92,6 @@ let sol = ["up","right","right","right","right","down","right","right","right","
 //====================================================================================
 // DECLARATION OF FUNCTIONS OR METHODS
 //====================================================================================
-
-/**
- * Abstracts all imposible movements from mario's position.
- * @param {Object} mario 
- * @param {Object} world
- * @returns List
- */
-
-function impossibleMovements(mario, world) {
-    let movements = [];
-    if(mario.posx == 0) {
-        movements.push("left");
-    }
-    if(mario.posx == world.length - 1) {
-        movements.push("right");
-    }
-    if(mario.posy == 0) {
-        movements.push("up");
-    }
-    if(mario.posy == world.length - 1) {
-        movements.push("down");
-    }
-    if (!(mario.posx == 0)) {
-        if(world[mario.posy][mario.posx-1] == 1) {
-            movements.push("left");
-        }
-    }
-    if(!(mario.posx == world.length - 1)) {
-        if(world[mario.posy][mario.posx+1] == 1) {
-            movements.push("right");
-        }
-    }
-    if(!(mario.posy == 0)) {
-        if(world[mario.posy-1][mario.posx] == 1) {
-            movements.push("up");
-        }
-    }
-    if(!(mario.posy == world.length - 1)) {
-        if(world[mario.posy+1][mario.posx] == 1) {
-            movements.push("down");
-        }
-    }
-    return movements;
-}
 
 /**
  * Displays a square with a defined color.
@@ -160,49 +116,48 @@ function paintSquare(x,y,width,height,color) {
  * @param {Object} world
  * @returns List
  */
-// (5,9) -> 1,2,3 X
 
 function possibleMovements(horse, world) {
     let movements = [];
     // 1
     if (horse.x-2 >= 0 && horse.y-1 >= 0 && (world[horse.y-1][horse.x-2] == 0 || world[horse.y-1][horse.x-2] == 5)) {
         movements.push({ x: horse.x-2, y: horse.y-1, bonus: world[horse.y-1][horse.x-2] == 5, dir: 1});
-        h1.possibleMovements.push({ x: horse.x-2, y: horse.y-1, bonus: world[horse.y-1][horse.x-2] == 5, dir: 1});
+        horse.possibleMovements.push({ x: horse.x-2, y: horse.y-1, bonus: world[horse.y-1][horse.x-2] == 5, dir: 1});
     }
     // 2
     if (horse.x-1 >= 0 && horse.y-2 >= 0 && (world[horse.y-2][horse.x-1] == 0 || world[horse.y-2][horse.x-1] == 5)) {
         movements.push({ x: horse.x-1, y: horse.y-2, bonus: world[horse.y-2][horse.x-1] == 5, dir: 2});
-        h1.possibleMovements.push({ x: horse.x-1, y: horse.y-2, bonus: world[horse.y-2][horse.x-1] == 5, dir: 2});
+        horse.possibleMovements.push({ x: horse.x-1, y: horse.y-2, bonus: world[horse.y-2][horse.x-1] == 5, dir: 2});
     }
     // 3
     if (horse.x+1 < world.length && horse.y-2 >= 0 && (world[horse.y-2][horse.x+1] == 0 || world[horse.y-2][horse.x+1] == 5)) {
         movements.push({ x: horse.x+1, y: horse.y-2, bonus: world[horse.y-2][horse.x+1] == 5, dir: 3});
-        h1.possibleMovements.push({ x: horse.x+1, y: horse.y-2, bonus: world[horse.y-2][horse.x+1] == 5, dir: 3});
+        horse.possibleMovements.push({ x: horse.x+1, y: horse.y-2, bonus: world[horse.y-2][horse.x+1] == 5, dir: 3});
     }
     // 4
     if (horse.x+2 < world.length && horse.y-1 >= 0 && (world[horse.y-1][horse.x+2] == 0 || world[horse.y-1][horse.x+2] == 5)) {
         movements.push({ x: horse.x+2, y: horse.y-1, bonus: world[horse.y-1][horse.x+2] == 5, dir: 4});
-        h1.possibleMovements.push({ x: horse.x+2, y: horse.y-1, bonus: world[horse.y-1][horse.x+2] == 5, dir: 4});
+        horse.possibleMovements.push({ x: horse.x+2, y: horse.y-1, bonus: world[horse.y-1][horse.x+2] == 5, dir: 4});
     }
     // 5
     if (horse.x+2 < world.length && horse.y+1 < world.length && (world[horse.y+1][horse.x+2] == 0 || world[horse.y+1][horse.x+2] == 5)) {
         movements.push({ x: horse.x+2, y: horse.y+1, bonus: world[horse.y+1][horse.x+2] == 5, dir: 5});
-        h1.possibleMovements.push({ x: horse.x+2, y: horse.y+1, bonus: world[horse.y+1][horse.x+2] == 5, dir: 5});
+        horse.possibleMovements.push({ x: horse.x+2, y: horse.y+1, bonus: world[horse.y+1][horse.x+2] == 5, dir: 5});
     }
     // 6
     if (horse.x+1 < world.length && horse.y+2 < world.length && (world[horse.y+2][horse.x+1] == 0 || world[horse.y+2][horse.x+1] == 5)) {
         movements.push({ x: horse.x+1, y: horse.y+2, bonus: world[horse.y+2][horse.x+1] == 5, dir: 6});
-        h1.possibleMovements.push({ x: horse.x+1, y: horse.y+2, bonus: world[horse.y+2][horse.x+1] == 5, dir: 6});
+        horse.possibleMovements.push({ x: horse.x+1, y: horse.y+2, bonus: world[horse.y+2][horse.x+1] == 5, dir: 6});
     }
     // 7
     if (horse.x-1 >= 0 && horse.y+2 < world.length && (world[horse.y+2][horse.x-1] == 0 || world[horse.y+2][horse.x-1] == 5)) {
         movements.push({ x: horse.x-1, y: horse.y+2, bonus: world[horse.y+2][horse.x-1] == 5, dir: 7});
-        h1.possibleMovements.push({ x: horse.x-1, y: horse.y+2, bonus: world[horse.y+2][horse.x-1] == 5, dir: 7});
+        horse.possibleMovements.push({ x: horse.x-1, y: horse.y+2, bonus: world[horse.y+2][horse.x-1] == 5, dir: 7});
     }
     // 8
     if (horse.x-2 >= 0 && horse.y+1 < world.length && (world[horse.y+1][horse.x-2] == 0 || world[horse.y+1][horse.x-2] == 5)) {
         movements.push({ x: horse.x-2, y: horse.y+1, bonus: world[horse.y+1][horse.x-2] == 5, dir: 8});
-        h1.possibleMovements.push({ x: horse.x-2, y: horse.y+1, bonus: world[horse.y+1][horse.x-2] == 5, dir: 8});
+        horse.possibleMovements.push({ x: horse.x-2, y: horse.y+1, bonus: world[horse.y+1][horse.x-2] == 5, dir: 8});
     }
     return movements;
 }
@@ -382,35 +337,51 @@ function paintPossibleMovements(horse, world) {
 /**
  * Cleans all fields that were supposed to be accessible.
  * @param {Object} horse 
+ * @param {Number} id: 1 -> human, 2 -> machine.
  * @param {Object} world 
  */
 
-function cleanAllPossibleMovements(horse, world) {
+function cleanAllPossibleMovements(horse, id, world) {
     let possibles = horse.possibleMovements;
+    let color = "";
+    if (id == 1) {
+        color = "#5bfe3e"
+    }
+    else {
+        color = "#fa4b2a"
+    }
     while (possibles.length > 0) {
         let move = possibles.pop();        
         if (move.bonus) {
-            if (move.x != horse.x && move.y != horse.y) {
+            if (move.x != horse.x || move.y != horse.y) {
                 showImage(move.x*squareSize,move.y*squareSize,squareSize,squareSize,"bonus");
                 paintSquare(move.x*squareSize,move.y*squareSize,squareSize,squareSize,"#dd9c10");
             }
             else {
                 // paint all adjacent fields is our duty this time.
                 // up
-                if (world[horse.y-1][horse.x] == 0) {
-                    paintSquare((horse.x)*squareSize,(horse.y-1)*squareSize,squareSize,squareSize,"#5bfe3e");
+                if (horse.y-1 >= 0) {
+                    if (world[horse.y-1][horse.x] == 0) {
+                        paintSquare((horse.x)*squareSize,(horse.y-1)*squareSize,squareSize,squareSize,color);
+                    }
                 }
                 // down
-                if (world[horse.y+1][horse.x] == 0) {
-                    paintSquare((horse.x)*squareSize,(horse.y+1)*squareSize,squareSize,squareSize,"#5bfe3e");
+                if (horse.y+1 < world.length) {
+                    if (world[horse.y+1][horse.x] == 0) {
+                        paintSquare((horse.x)*squareSize,(horse.y+1)*squareSize,squareSize,squareSize,color);
+                    }
                 }
                 // left
-                if (world[horse.y][horse.x-1] == 0) {
-                    paintSquare((horse.x-1)*squareSize,(horse.y)*squareSize,squareSize,squareSize,"#5bfe3e");
+                if (horse.x-1 >= 0) {
+                    if (world[horse.y][horse.x-1] == 0) {
+                        paintSquare((horse.x-1)*squareSize,(horse.y)*squareSize,squareSize,squareSize,color);
+                    }
                 }
                 // right
-                if (world[horse.y][horse.x+1] == 0) {
-                    paintSquare((horse.x+1)*squareSize,(horse.y)*squareSize,squareSize,squareSize,"#5bfe3e");
+                if (horse.x+1 < world.length) {
+                    if (world[horse.y][horse.x+1] == 0) {
+                        paintSquare((horse.x+1)*squareSize,(horse.y)*squareSize,squareSize,squareSize,color);
+                    }
                 }
             }
         }
@@ -465,9 +436,9 @@ function paintWorld(world) {
             }
         }
     }
-    paintPossibleMovements(h1, world);
-    h1.selectedMove = 0;
-    paintSelectedField(h1);
+    // paintPossibleMovements(h1, world);
+    // h1.selectedMove = 0;
+    // paintSelectedField(h1);
 }
 
 /**
@@ -495,39 +466,34 @@ function paintSelectedField(horse) {
 }
 
 /**
- * Turns mario in a given direction and paints him.
- * @param {String} dir: "up", "down", "left", "right"
+ * Turns a horse in a given direction and paints him.
+ * @param {Object} horse
+ * @param {Number} id: 1 -> human, 2 -> machine.
  */
-
-function moveMario(dir) {
-    let impossiblesM = impossibleMovements(mario, world);
-    if(dir == "up" && !impossiblesM.includes("up")) {
-        paintSquare(mario.posx*squareSize,mario.posy*squareSize,squareSize,squareSize,"white")
-        world[mario.posy][mario.posx] = 0;
-        world[mario.posy-1][mario.posx] = 2;
-        mario.posy -= 1;
-        paintHorse(mario)
+function moveHorse(horse, id) {
+    let i = horse.selectedMove;
+    let newMov = horse.possibleMovements[i];
+    if (id == 1) {
+        // player 1
+        world[horse.y][horse.x] = 4;
+        paintSquare(horse.x*squareSize,horse.y*squareSize,squareSize,squareSize,"#5bfe3e")
     }
-    if(dir == "down" && !impossiblesM.includes("down")) {
-        paintSquare(mario.posx*squareSize,mario.posy*squareSize,squareSize,squareSize,"white")
-        world[mario.posy][mario.posx] = 0;
-        world[mario.posy+1][mario.posx] = 2;
-        mario.posy += 1;
-        paintHorse(mario)
+    else {
+        // player 2
+        world[horse.y][horse.x] = 3;
+        paintSquare(horse.x*squareSize,horse.y*squareSize,squareSize,squareSize,"#fa4b2a")
     }
-    if(dir == "left" && !impossiblesM.includes("left")) {
-        paintSquare(mario.posx*squareSize,mario.posy*squareSize,squareSize,squareSize,"white")
-        world[mario.posy][mario.posx] = 0;
-        world[mario.posy][mario.posx-1] = 2;
-        mario.posx -= 1;
-        paintHorse(mario)
+    horse.x = newMov.x;
+    horse.y = newMov.y;
+    horse.selectedMove = 0;
+    cleanAllPossibleMovements(horse, id, world);
+    if (id == 1) {
+        world[horse.y][horse.x] = 1;
+        paintHorse(horse,"#5bfe3e");
     }
-    if(dir == "right" && !impossiblesM.includes("right")) {
-        paintSquare(mario.posx*squareSize,mario.posy*squareSize,squareSize,squareSize,"white")
-        world[mario.posy][mario.posx] = 0;
-        world[mario.posy][mario.posx+1] = 2;
-        mario.posx += 1;
-        paintHorse(mario)
+    else{
+        world[horse.y][horse.x] = 2;
+        paintHorse(horse,"#fa4b2a");
     }
 }
 
@@ -586,14 +552,23 @@ try{
     // The world is painted at the beginning
     paintWorld(world);    
 
-    // When mario starts to move
-    // let intervalID = setInterval(() => {
-    //     nextMovement(sol);
-    //     if(mario.posx == princess.posx && mario.posy == princess.posy) {
-    //         clearInterval(intervalID);
-    //         endGame();
-    //     }
-    // }, 1000)    
+    // When machine starts to move
+    let intervalID = setInterval(() => {
+        console.log(`is h2 turn: ${h2.isTurn}`);
+        if (h2.isTurn) {
+            possibleMovements(h2, world);
+            moveHorse(h2, 2);
+            h2.isTurn = false;
+            h1.isTurn = true;
+            paintPossibleMovements(h1, world);
+            h1.selectedMove = 0;
+            paintSelectedField(h1);
+        }
+        // if(mario.posx == princess.posx && mario.posy == princess.posy) {
+        //     clearInterval(intervalID);
+        //     endGame();
+        // }
+    }, 1000)    
 
     // Button listener
     // restartButton.addEventListener('mousedown', () => {
@@ -602,58 +577,52 @@ try{
 
     // When a mouse button is pressed.
     canvas.addEventListener('mousedown', ( event ) => {        
-        let i = h1.selectedMove;
-        let newMov = h1.possibleMovements[i];
-        world[h1.y][h1.x] = 4;
-        paintSquare(h1.x*squareSize,h1.y*squareSize,squareSize,squareSize,"#5bfe3e")
-        h1.x = newMov.x;
-        h1.y = newMov.y;
-        world[h1.y][h1.x] = 1;
-        h1.selectedMove = 0;
-        cleanAllPossibleMovements(h1, world);
-        paintPossibleMovements(h1, world);
-        paintSelectedField(h1);
-        paintHorse(h1,"#5bfe3e");
-        console.log(world);
-        console.log(h1.possibleMovements);
+        if (h1.isTurn) { 
+            moveHorse(h1, 1);
+            h1.isTurn = false;
+            h2.isTurn = true;
+            console.log(world);
+        }
     });
 
     // Logic to manage mouse movement.
     canvas.addEventListener('mousemove', ( event ) => {
-        cursor.x = event.pageX;
-        cursor.y = event.pageY;
-        let i = h1.selectedMove;
-        let scale = 3;
-        // up - left
-        if (cursor.y == cursor.prevY - scale || cursor.x == cursor.prevX - scale) {
-            paintSquare(h1.possibleMovements[i].x*squareSize,h1.possibleMovements[i].y*squareSize,squareSize,squareSize,"#4adeff");
-            if (h1.possibleMovements[i].bonus) {
-                showImage(h1.possibleMovements[i].x*squareSize,h1.possibleMovements[i].y*squareSize,squareSize,squareSize,"bonus")
+        if (h1.isTurn) {
+            cursor.x = event.pageX;
+            cursor.y = event.pageY;
+            let i = h1.selectedMove;
+            let scale = 3;
+            // up - left
+            if (cursor.y == cursor.prevY - scale || cursor.x == cursor.prevX - scale) {
+                paintSquare(h1.possibleMovements[i].x*squareSize,h1.possibleMovements[i].y*squareSize,squareSize,squareSize,"#4adeff");
+                if (h1.possibleMovements[i].bonus) {
+                    showImage(h1.possibleMovements[i].x*squareSize,h1.possibleMovements[i].y*squareSize,squareSize,squareSize,"bonus")
+                }
+                if (i == 0) {
+                    h1.selectedMove = h1.possibleMovements.length - 1;
+                } 
+                else {
+                    h1.selectedMove -= 1;
+                }
+                paintSelectedField(h1);
             }
-            if (i == 0) {
-                h1.selectedMove = h1.possibleMovements.length - 1;
-            } 
-            else {
-                h1.selectedMove -= 1;
+            // down - right
+            else if (cursor.y == cursor.prevY + scale || cursor.x == cursor.prevX + scale) {
+                paintSquare(h1.possibleMovements[i].x*squareSize,h1.possibleMovements[i].y*squareSize,squareSize,squareSize,"#4adeff");
+                if (h1.possibleMovements[i].bonus) {
+                    showImage(h1.possibleMovements[i].x*squareSize,h1.possibleMovements[i].y*squareSize,squareSize,squareSize,"bonus")
+                }
+                if (i == h1.possibleMovements.length - 1) {
+                    h1.selectedMove = 0;
+                } 
+                else {
+                    h1.selectedMove += 1;
+                }
+                paintSelectedField(h1);
             }
-            paintSelectedField(h1);
+            cursor.prevX = event.pageX;
+            cursor.prevY = event.pageY;
         }
-        // down - right
-        else if (cursor.y == cursor.prevY + scale || cursor.x == cursor.prevX + scale) {
-            paintSquare(h1.possibleMovements[i].x*squareSize,h1.possibleMovements[i].y*squareSize,squareSize,squareSize,"#4adeff");
-            if (h1.possibleMovements[i].bonus) {
-                showImage(h1.possibleMovements[i].x*squareSize,h1.possibleMovements[i].y*squareSize,squareSize,squareSize,"bonus")
-            }
-            if (i == h1.possibleMovements.length - 1) {
-                h1.selectedMove = 0;
-            } 
-            else {
-                h1.selectedMove += 1;
-            }
-            paintSelectedField(h1);
-        }
-        cursor.prevX = event.pageX;
-        cursor.prevY = event.pageY;
     });
 
     // Key listener
