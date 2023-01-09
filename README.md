@@ -14,6 +14,7 @@ The ultimate AI's second project developed by Unixvalle members
 <p align='center'>
   <img src='https://user-images.githubusercontent.com/62605744/211212127-84ca8019-9b76-4594-8ab7-722d3af08ad4.png'>
 </p>
+
 - Los elementos del tablero se representan mediante la siguiente enumeración:
   - 0 <- Casilla vacía (disponible).
   - 1 <- Caballo del jugador 1.
