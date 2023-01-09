@@ -59,12 +59,21 @@ let initWorld =
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
 ]
+// Cursor
+let cursor = {
+    x: 0,
+    y: 0,
+    prevX: 0,
+    prevY: 0,
+}
 
 // Horse's player 1
 let h1 = {
     x: 0,
     y: 0,
     isTurn: true,
+    possibleMovements: [],
+    selectedMove: null, // index of possibleMovements array
 }
 
 // Horse's player 2
@@ -72,6 +81,8 @@ let h2 = {
     x: 0,
     y: 0,
     isTurn: false,
+    possibleMovements: [],
+    selectedMove: null, // index of possibleMovements array
 }
 
 // Tests
@@ -155,40 +166,46 @@ function possibleMovements(horse, world) {
     let movements = [];
     // 1
     if (horse.x-2 >= 0 && horse.y-1 >= 0 && (world[horse.y-1][horse.x-2] == 0 || world[horse.y-1][horse.x-2] == 5)) {
-        movements.push(1);
+        movements.push({ x: horse.x-2, y: horse.y-1, bonus: world[horse.y-1][horse.x-2] == 5, dir: 1});
+        h1.possibleMovements.push({ x: horse.x-2, y: horse.y-1, bonus: world[horse.y-1][horse.x-2] == 5, dir: 1});
     }
     // 2
     if (horse.x-1 >= 0 && horse.y-2 >= 0 && (world[horse.y-2][horse.x-1] == 0 || world[horse.y-2][horse.x-1] == 5)) {
-        movements.push(2);
+        movements.push({ x: horse.x-1, y: horse.y-2, bonus: world[horse.y-2][horse.x-1] == 5, dir: 2});
+        h1.possibleMovements.push({ x: horse.x-1, y: horse.y-2, bonus: world[horse.y-2][horse.x-1] == 5, dir: 2});
     }
     // 3
     if (horse.x+1 < world.length && horse.y-2 >= 0 && (world[horse.y-2][horse.x+1] == 0 || world[horse.y-2][horse.x+1] == 5)) {
-        movements.push(3);
+        movements.push({ x: horse.x+1, y: horse.y-2, bonus: world[horse.y-2][horse.x+1] == 5, dir: 3});
+        h1.possibleMovements.push({ x: horse.x+1, y: horse.y-2, bonus: world[horse.y-2][horse.x+1] == 5, dir: 3});
     }
     // 4
     if (horse.x+2 < world.length && horse.y-1 >= 0 && (world[horse.y-1][horse.x+2] == 0 || world[horse.y-1][horse.x+2] == 5)) {
-        movements.push(4);
+        movements.push({ x: horse.x+2, y: horse.y-1, bonus: world[horse.y-1][horse.x+2] == 5, dir: 4});
+        h1.possibleMovements.push({ x: horse.x+2, y: horse.y-1, bonus: world[horse.y-1][horse.x+2] == 5, dir: 4});
     }
     // 5
     if (horse.x+2 < world.length && horse.y+1 < world.length && (world[horse.y+1][horse.x+2] == 0 || world[horse.y+1][horse.x+2] == 5)) {
-        movements.push(5);
+        movements.push({ x: horse.x+2, y: horse.y+1, bonus: world[horse.y+1][horse.x+2] == 5, dir: 5});
+        h1.possibleMovements.push({ x: horse.x+2, y: horse.y+1, bonus: world[horse.y+1][horse.x+2] == 5, dir: 5});
     }
     // 6
     if (horse.x+1 < world.length && horse.y+2 < world.length && (world[horse.y+2][horse.x+1] == 0 || world[horse.y+2][horse.x+1] == 5)) {
-        movements.push(6);
+        movements.push({ x: horse.x+1, y: horse.y+2, bonus: world[horse.y+2][horse.x+1] == 5, dir: 6});
+        h1.possibleMovements.push({ x: horse.x+1, y: horse.y+2, bonus: world[horse.y+2][horse.x+1] == 5, dir: 6});
     }
     // 7
     if (horse.x-1 >= 0 && horse.y+2 < world.length && (world[horse.y+2][horse.x-1] == 0 || world[horse.y+2][horse.x-1] == 5)) {
-        movements.push(7);
+        movements.push({ x: horse.x-1, y: horse.y+2, bonus: world[horse.y+2][horse.x-1] == 5, dir: 7});
+        h1.possibleMovements.push({ x: horse.x-1, y: horse.y+2, bonus: world[horse.y+2][horse.x-1] == 5, dir: 7});
     }
     // 8
-    if (horse.x-2 >= 0 && horse.y+1 < world.length && (world[horse.y+1][horse.x-2] == 0 || world[horse.y+1][horse.x-2] == 0)) {
-        movements.push(8);
+    if (horse.x-2 >= 0 && horse.y+1 < world.length && (world[horse.y+1][horse.x-2] == 0 || world[horse.y+1][horse.x-2] == 5)) {
+        movements.push({ x: horse.x-2, y: horse.y+1, bonus: world[horse.y+1][horse.x-2] == 5, dir: 8});
+        h1.possibleMovements.push({ x: horse.x-2, y: horse.y+1, bonus: world[horse.y+1][horse.x-2] == 5, dir: 8});
     }
     return movements;
 }
-
-console.log(possibleMovements({ x:5, y:9 }, world));
 
 /**
  * Draws an image in canvas with a given source, which means the pic's name.
@@ -308,32 +325,97 @@ function paintPossibleMovements(horse, world) {
     let movements = possibleMovements(horse, world);
     while(movements.length > 0) {
         let move = movements.pop();
-        if (move == 1) {
+        if (move.dir == 1) {
+            if (move.bonus) {
+                showImage((horse.x-2)*squareSize,(horse.y-1)*squareSize,squareSize,squareSize,"bonus");
+            }
             paintSquare((horse.x-2)*squareSize,(horse.y-1)*squareSize,squareSize,squareSize,"#4adeff");
         }
-        else if (move == 2) {
+        else if (move.dir == 2) {
+            if (move.bonus) {
+                showImage((horse.x-1)*squareSize,(horse.y-2)*squareSize,squareSize,squareSize,"bonus");
+            }
             paintSquare((horse.x-1)*squareSize,(horse.y-2)*squareSize,squareSize,squareSize,"#4adeff");
         }
-        else if (move == 3) {
+        else if (move.dir == 3) {
+            if (move.bonus) {
+                showImage((horse.x+1)*squareSize,(horse.y-2)*squareSize,squareSize,squareSize,"bonus");
+            }
             paintSquare((horse.x+1)*squareSize,(horse.y-2)*squareSize,squareSize,squareSize,"#4adeff");
         }
-        else if (move == 4) {
+        else if (move.dir == 4) {
+            if (move.bonus) {
+                showImage((horse.x+2)*squareSize,(horse.y-1)*squareSize,squareSize,squareSize,"bonus");
+            }
             paintSquare((horse.x+2)*squareSize,(horse.y-1)*squareSize,squareSize,squareSize,"#4adeff");
         }
-        else if (move == 5) {
+        else if (move.dir == 5) {
+            if (move.bonus) {
+                showImage((horse.x+2)*squareSize,(horse.y+1)*squareSize,squareSize,squareSize,"bonus");
+            }
             paintSquare((horse.x+2)*squareSize,(horse.y+1)*squareSize,squareSize,squareSize,"#4adeff");
         }
-        else if (move == 6) {
+        else if (move.dir == 6) {
+            if (move.bonus) {
+                showImage((horse.x+1)*squareSize,(horse.y+2)*squareSize,squareSize,squareSize,"bonus");
+            }
             paintSquare((horse.x+1)*squareSize,(horse.y+2)*squareSize,squareSize,squareSize,"#4adeff");
         }
-        else if (move == 7) {
+        else if (move.dir == 7) {
+            if (move.bonus) {
+                showImage((horse.x-1)*squareSize,(horse.y+2)*squareSize,squareSize,squareSize,"bonus");
+            }
             paintSquare((horse.x-1)*squareSize,(horse.y+2)*squareSize,squareSize,squareSize,"#4adeff");
         }
-        else if (move == 8) {
+        else if (move.dir == 8) {
+            if (move.bonus) {
+                showImage((horse.x-2)*squareSize,(horse.y+1)*squareSize,squareSize,squareSize,"bonus");
+            }
             paintSquare((horse.x-2)*squareSize,(horse.y+1)*squareSize,squareSize,squareSize,"#4adeff");
         }
         else {
             throw `There's an invalid item in movements array: ${move}`;
+        }
+    }
+}
+
+/**
+ * Cleans all fields that were supposed to be accessible.
+ * @param {Object} horse 
+ * @param {Object} world 
+ */
+
+function cleanAllPossibleMovements(horse, world) {
+    let possibles = horse.possibleMovements;
+    while (possibles.length > 0) {
+        let move = possibles.pop();        
+        if (move.bonus) {
+            if (move.x != horse.x && move.y != horse.y) {
+                showImage(move.x*squareSize,move.y*squareSize,squareSize,squareSize,"bonus");
+                paintSquare(move.x*squareSize,move.y*squareSize,squareSize,squareSize,"#dd9c10");
+            }
+            else {
+                // paint all adjacent fields is our duty this time.
+                // up
+                if (world[horse.y-1][horse.x] == 0) {
+                    paintSquare((horse.x)*squareSize,(horse.y-1)*squareSize,squareSize,squareSize,"#5bfe3e");
+                }
+                // down
+                if (world[horse.y+1][horse.x] == 0) {
+                    paintSquare((horse.x)*squareSize,(horse.y+1)*squareSize,squareSize,squareSize,"#5bfe3e");
+                }
+                // left
+                if (world[horse.y][horse.x-1] == 0) {
+                    paintSquare((horse.x-1)*squareSize,(horse.y)*squareSize,squareSize,squareSize,"#5bfe3e");
+                }
+                // right
+                if (world[horse.y][horse.x+1] == 0) {
+                    paintSquare((horse.x+1)*squareSize,(horse.y)*squareSize,squareSize,squareSize,"#5bfe3e");
+                }
+            }
+        }
+        else {
+            paintSquare(move.x*squareSize,move.y*squareSize,squareSize,squareSize,"white");
         }
     }
 }
@@ -384,6 +466,8 @@ function paintWorld(world) {
         }
     }
     paintPossibleMovements(h1, world);
+    h1.selectedMove = 0;
+    paintSelectedField(h1);
 }
 
 /**
@@ -395,6 +479,19 @@ function paintWorld(world) {
 function paintHorse(horse, color) {
     paintSquare(horse.x*squareSize,horse.y*squareSize,squareSize,squareSize,color)
     showImage(horse.x*squareSize,horse.y*squareSize,squareSize,squareSize,"horse")
+}
+
+/**
+ * Paints the selected field by player 1.
+ * @param {Object} horse  
+ */
+
+function paintSelectedField(horse) {
+    let i = horse.selectedMove
+    if (horse.possibleMovements[i].bonus) {
+        showImage(horse.possibleMovements[i].x*squareSize,horse.possibleMovements[i].y*squareSize,squareSize,squareSize,"bonus")
+    }
+    paintSquare(horse.possibleMovements[i].x*squareSize,horse.possibleMovements[i].y*squareSize,squareSize,squareSize,"#c1ff7e")
 }
 
 /**
@@ -487,11 +584,7 @@ try{
     makeWorld(world);
 
     // The world is painted at the beginning
-    paintWorld(world);
-    console.log(h1);
-    console.log(h2);
-    console.log(world);
-    console.log(possibleMovements(h1,world));
+    paintWorld(world);    
 
     // When mario starts to move
     // let intervalID = setInterval(() => {
@@ -503,9 +596,65 @@ try{
     // }, 1000)    
 
     // Button listener
-    restartButton.addEventListener('mousedown', () => {
-        restartGame();
-    })
+    // restartButton.addEventListener('mousedown', () => {
+    //     restartGame();
+    // })
+
+    // When a mouse button is pressed.
+    canvas.addEventListener('mousedown', ( event ) => {        
+        let i = h1.selectedMove;
+        let newMov = h1.possibleMovements[i];
+        world[h1.y][h1.x] = 4;
+        paintSquare(h1.x*squareSize,h1.y*squareSize,squareSize,squareSize,"#5bfe3e")
+        h1.x = newMov.x;
+        h1.y = newMov.y;
+        world[h1.y][h1.x] = 1;
+        h1.selectedMove = 0;
+        cleanAllPossibleMovements(h1, world);
+        paintPossibleMovements(h1, world);
+        paintSelectedField(h1);
+        paintHorse(h1,"#5bfe3e");
+        console.log(world);
+        console.log(h1.possibleMovements);
+    });
+
+    // Logic to manage mouse movement.
+    canvas.addEventListener('mousemove', ( event ) => {
+        cursor.x = event.pageX;
+        cursor.y = event.pageY;
+        let i = h1.selectedMove;
+        let scale = 3;
+        // up - left
+        if (cursor.y == cursor.prevY - scale || cursor.x == cursor.prevX - scale) {
+            paintSquare(h1.possibleMovements[i].x*squareSize,h1.possibleMovements[i].y*squareSize,squareSize,squareSize,"#4adeff");
+            if (h1.possibleMovements[i].bonus) {
+                showImage(h1.possibleMovements[i].x*squareSize,h1.possibleMovements[i].y*squareSize,squareSize,squareSize,"bonus")
+            }
+            if (i == 0) {
+                h1.selectedMove = h1.possibleMovements.length - 1;
+            } 
+            else {
+                h1.selectedMove -= 1;
+            }
+            paintSelectedField(h1);
+        }
+        // down - right
+        else if (cursor.y == cursor.prevY + scale || cursor.x == cursor.prevX + scale) {
+            paintSquare(h1.possibleMovements[i].x*squareSize,h1.possibleMovements[i].y*squareSize,squareSize,squareSize,"#4adeff");
+            if (h1.possibleMovements[i].bonus) {
+                showImage(h1.possibleMovements[i].x*squareSize,h1.possibleMovements[i].y*squareSize,squareSize,squareSize,"bonus")
+            }
+            if (i == h1.possibleMovements.length - 1) {
+                h1.selectedMove = 0;
+            } 
+            else {
+                h1.selectedMove += 1;
+            }
+            paintSelectedField(h1);
+        }
+        cursor.prevX = event.pageX;
+        cursor.prevY = event.pageY;
+    });
 
     // Key listener
     // document.body.addEventListener('keydown', ( event ) => {

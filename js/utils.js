@@ -134,13 +134,31 @@ export function euclidianDistance(a, b){
 }
 
 /**
+ * Gets the real mouse position from canvas. (THERE'RE PROBLEMS WITH RETURNED COORDINATES).
+ * @param {*} canvas 
+ * @param {*} evt 
+ * @returns 
+ */
+
+export function  getMousePos(canvas, evt, scale) {
+    var rect = canvas.getBoundingClientRect(), // abs. size of element
+    scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for x
+    scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for y
+
+  return {
+    x: ((evt.pageX - rect.left) * scaleX),   // scale mouse coordinates after they have
+    y: ((evt.pageY - rect.top) * scaleY)     // been adjusted to be relative to element
+  }
+}
+
+/**
  * Checks if a point is inside a rectangle;
  * @param {Object} point
  * @param {Object} rect 
  */
 
 export function overlapsRect(point, rect) {
-    return point.x >= rect.x && point.x <= rect.x + width && point.y <= rect.y + height && point.y >= rect.y;
+    return point.x >= rect.x && point.x <= rect.x + rect.width && point.y <= rect.y + rect.height && point.y >= rect.y;
 }
 
 /**
