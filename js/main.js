@@ -74,6 +74,7 @@ let h1 = {
     isTurn: false,
     possibleMovements: [],
     selectedMove: 0, // index of possibleMovements array
+    nBoxes: 1,
 }
 
 // Horse's player 2
@@ -83,7 +84,18 @@ let h2 = {
     isTurn: true,
     possibleMovements: [],
     selectedMove: 0, // index of possibleMovements array
+    nBoxes: 1,
 }
+
+// tree
+let tree = {
+    x: 0,
+    y: 0,
+    depth: 0,
+}
+
+// computing time
+let computingTime = 0;
 
 // Tests
 let sol = ["up","right","right","right","right","down","right","right","right","right","right","right",
@@ -363,24 +375,28 @@ function cleanAllPossibleMovements(horse, id, world) {
                 if (horse.y-1 >= 0) {
                     if (world[horse.y-1][horse.x] == 0) {
                         paintSquare((horse.x)*squareSize,(horse.y-1)*squareSize,squareSize,squareSize,color);
+                        horse.nBoxes ++;
                     }
                 }
                 // down
                 if (horse.y+1 < world.length) {
                     if (world[horse.y+1][horse.x] == 0) {
                         paintSquare((horse.x)*squareSize,(horse.y+1)*squareSize,squareSize,squareSize,color);
+                        horse.nBoxes ++;
                     }
                 }
                 // left
                 if (horse.x-1 >= 0) {
                     if (world[horse.y][horse.x-1] == 0) {
                         paintSquare((horse.x-1)*squareSize,(horse.y)*squareSize,squareSize,squareSize,color);
+                        horse.nBoxes ++;
                     }
                 }
                 // right
                 if (horse.x+1 < world.length) {
                     if (world[horse.y][horse.x+1] == 0) {
                         paintSquare((horse.x+1)*squareSize,(horse.y)*squareSize,squareSize,squareSize,color);
+                        horse.nBoxes ++;
                     }
                 }
             }
@@ -471,6 +487,7 @@ function paintSelectedField(horse) {
  * @param {Number} id: 1 -> human, 2 -> machine.
  */
 function moveHorse(horse, id) {
+    horse.nBoxes ++;
     let i = horse.selectedMove;
     let newMov = horse.possibleMovements[i];
     if (id == 1) {
@@ -495,6 +512,21 @@ function moveHorse(horse, id) {
         world[horse.y][horse.x] = 2;
         paintHorse(horse,"#fa4b2a");
     }
+    updateStatistics();
+}
+
+/**
+ * Keeps updated statistics about the game: number of boxes gained by each player
+ * and computing time.
+ */
+
+function updateStatistics() {
+    // player 1 - boxes
+    document.getElementById("expanded_nodes").textContent = `${h1.nBoxes}`;
+    // player 2 - boxes
+    document.getElementById("tree_depth").textContent = `${h2.nBoxes}`;
+    // computing time
+    document.getElementById("computing_time").textContent = `${util.truncateDecimals(computingTime,4)} ms`;
 }
 
 /**
@@ -502,10 +534,14 @@ function moveHorse(horse, id) {
  */
 
 function endGame() {
+    computingTime = Math.abs(endTime-startTime);
+    // hide container and show the end screen.
     let endScreen = document.getElementById('end-screen');
     let container = document.getElementById('container');
     endScreen.style.display = `flex`;
     container.style.display = `none`;
+    // show the statistics too.
+    updateStatistics();
 }
 
 /**
