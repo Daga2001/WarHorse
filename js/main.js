@@ -47,16 +47,16 @@ let hereWeGo = new Audio(`../sound/here-we-go.mp3`)
  */
 let world = 
 [
-    [0,0,0,0,0,4,3,4,3,4],
-    [0,0,0,0,0,4,3,4,3,4],
-    [0,0,0,2,5,4,3,4,3,4],
-    [0,0,0,0,5,4,3,4,3,4],
-    [0,0,0,0,5,4,3,4,1,4],
-    [0,0,0,0,0,4,3,4,3,4],
-    [0,0,0,0,0,4,3,4,3,4],
-    [0,0,0,0,0,4,3,4,3,4],
-    [0,0,0,0,0,4,3,4,3,4],
-    [0,0,0,0,0,4,3,4,3,4],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,1,0,2,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,5,0,5,0,0,0],
+    [0,0,0,0,0,0,0,0,0,5],
+    [0,0,0,0,0,0,0,5,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
 ];
 
 let initWorld = util.deep_copy(world);
@@ -642,6 +642,18 @@ export function minimax(initNode, depth, id_init_horse) {
         let nextNode = function(stack) {
             return stack.shift();
         }
+
+        /**
+         * Checks if a node is a leaf, to assign it a value.
+         * @param {Object} node
+         */
+        let evalNode = function(parent, node) {
+            // evaluates leaf nodes.
+            if(parent.depth + 1 == depth) {
+                node.val = util.calcHeuristic(node.horse1, node.horse2);
+                if (maxVal < node.val) maxVal = node.val;
+            }
+        }
     
         let body = function (parent, childrenType, horse, utility, h_id, field) {
             let i_children = [];
@@ -649,35 +661,35 @@ export function minimax(initNode, depth, id_init_horse) {
             let evalBoxes = function (h, node) {
                 if (node[h.y][h.x] == 5) {
                     // up
-                    if (horse.y-1 >= 0) {
-                        if (world[horse.y-1][horse.x] == 0) {
-                            if (id == 1) world[horse.y-1][horse.x] = 4;
-                            else if (id == 2) world[horse.y-1][horse.x] = 3;
-                            horse.nBoxes ++;
+                    if (h.y-1 >= 0) {
+                        if (node[h.y-1][h.x] == 0) {
+                            if (parent.id_horse == 1) node[h.y-1][h.x] = 4;
+                            else if (parent.id_horse == 2) node[h.y-1][h.x] = 3;
+                            h.nBoxes ++;
                         }
                     }
                     // down
-                    if (horse.y+1 < world.length) {
-                        if (world[horse.y+1][horse.x] == 0) {
-                            if (id == 1) world[horse.y+1][horse.x] = 4;
-                            else if (id == 2) world[horse.y+1][horse.x] = 3;
-                            horse.nBoxes ++;
+                    if (h.y+1 < node.length) {
+                        if (node[h.y+1][h.x] == 0) {
+                            if (parent.id_horse == 1) node[h.y+1][h.x] = 4;
+                            else if (parent.id_horse == 2) node[h.y+1][h.x] = 3;
+                            h.nBoxes ++;
                         }
                     }
                     // left
-                    if (horse.x-1 >= 0) {
-                        if (world[horse.y][horse.x-1] == 0) {
-                            if (id == 1) world[horse.y][horse.x-1] = 4;
-                            else if (id == 2) world[horse.y][horse.x-1] = 3;
-                            horse.nBoxes ++;
+                    if (h.x-1 >= 0) {
+                        if (node[h.y][h.x-1] == 0) {
+                            if (parent.id_horse == 1) node[h.y][h.x-1] = 4;
+                            else if (parent.id_horse == 2) node[h.y][h.x-1] = 3;
+                            h.nBoxes ++;
                         }
                     }
                     // right
-                    if (horse.x+1 < world.length) {
-                        if (world[horse.y][horse.x+1] == 0) {
-                            if (id == 1) world[horse.y][horse.x+1] = 4;
-                            else if (id == 2) world[horse.y][horse.x+1] = 3;
-                            horse.nBoxes ++;
+                    if (h.x+1 < node.length) {
+                        if (node[h.y][h.x+1] == 0) {
+                            if (parent.id_horse == 1) node[h.y][h.x+1] = 4;
+                            else if (parent.id_horse == 2) node[h.y][h.x+1] = 3;
+                            h.nBoxes ++;
                         }
                     }
                 }
@@ -718,10 +730,7 @@ export function minimax(initNode, depth, id_init_horse) {
                 else if (h_id == 2) {
                     newNode.horse2 = util.deep_copy(h);
                 }
-                // evaluates leaf nodes.
-                if(parent.depth + 1 == depth ) {
-                    newNode.val = util.calcHeuristic(newNode.horse1, newNode.horse2);
-                }
+                evalNode(parent, newNode);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -756,10 +765,7 @@ export function minimax(initNode, depth, id_init_horse) {
                 else if (h_id == 2) {
                     newNode.horse2 = util.deep_copy(h);
                 }
-                // evaluates leaf nodes.
-                if(parent.depth + 1 == depth ) {
-                    newNode.val = util.calcHeuristic(newNode.horse1, newNode.horse2);
-                }
+                evalNode(parent, newNode);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -794,10 +800,7 @@ export function minimax(initNode, depth, id_init_horse) {
                 else if (h_id == 2) {
                     newNode.horse2 = util.deep_copy(h);
                 }
-                // evaluates leaf nodes.
-                if(parent.depth + 1 == depth ) {
-                    newNode.val = util.calcHeuristic(newNode.horse1, newNode.horse2);
-                }
+                evalNode(parent, newNode);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -832,10 +835,7 @@ export function minimax(initNode, depth, id_init_horse) {
                 else if (h_id == 2) {
                     newNode.horse2 = util.deep_copy(h);
                 }
-                // evaluates leaf nodes.
-                if(parent.depth + 1 == depth ) {
-                    newNode.val = util.calcHeuristic(newNode.horse1, newNode.horse2);
-                }
+                evalNode(parent, newNode);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -870,10 +870,7 @@ export function minimax(initNode, depth, id_init_horse) {
                 else if (h_id == 2) {
                     newNode.horse2 = util.deep_copy(h);
                 }
-                // evaluates leaf nodes.
-                if(parent.depth + 1 == depth ) {
-                    newNode.val = util.calcHeuristic(newNode.horse1, newNode.horse2);
-                }
+                evalNode(parent, newNode);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -908,10 +905,7 @@ export function minimax(initNode, depth, id_init_horse) {
                 else if (h_id == 2) {
                     newNode.horse2 = util.deep_copy(h);
                 }
-                // evaluates leaf nodes.
-                if(parent.depth + 1 == depth ) {
-                    newNode.val = util.calcHeuristic(newNode.horse1, newNode.horse2);
-                }
+                evalNode(parent, newNode);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -946,10 +940,7 @@ export function minimax(initNode, depth, id_init_horse) {
                 else if (h_id == 2) {
                     newNode.horse2 = util.deep_copy(h);
                 }
-                // evaluates leaf nodes.
-                if(parent.depth + 1 == depth ) {
-                    newNode.val = util.calcHeuristic(newNode.horse1, newNode.horse2);
-                }
+                evalNode(parent, newNode);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -984,10 +975,7 @@ export function minimax(initNode, depth, id_init_horse) {
                 else if (h_id == 2) {
                     newNode.horse2 = util.deep_copy(h);
                 }
-                // evaluates leaf nodes.
-                if(parent.depth + 1 == depth ) {
-                    newNode.val = util.calcHeuristic(newNode.horse1, newNode.horse2);
-                }
+                evalNode(parent, newNode);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -1133,26 +1121,28 @@ export function minimax(initNode, depth, id_init_horse) {
     let pickSolution = function(rootNode) {
         if (rootNode.children == null) return null;
         if (rootNode.children.length == 0) return null;
-        let best = rootNode.children[0];
+        let i_best = rootNode.children[0];
+        let bestNode = tree[i_best];
         for(let i = 1; i < rootNode.children.length; i++) {
-            if (best < rootNode.children[i]) {
-                best = rootNode.children[i]
+            let node = tree[rootNode.children[i]];
+            if (bestNode.val < node.val) {
+                bestNode = node;
             }
         }
-        let node = tree[best];
-        h2.possibleMovements = node.horse2.possibleMovements;
-        return node.horse2.selectedMove;
+        h2.possibleMovements = bestNode.horse2.possibleMovements;
+        return bestNode.horse2.selectedMove;
     }
 
     // ==============================================================
     // 1. Tree Building.
     // 2. Evaluating the scores for the leaf nodes based on the evaluation function.
     // ==============================================================
-    
+    let maxVal = 0;
     let queue = [];
     let tree = [];
 
     let initBacktrackIndex = buildTree(queue, tree);
+    console.log(maxVal);
 
     // ==============================================================
     // 3. Backtracking from the leaf to the root nodes.
@@ -1233,7 +1223,6 @@ function startGame() {
             moveHorse(1);
             h1.isTurn = false;
             h2.isTurn = true;
-            console.log(world);
         }
     });
 
