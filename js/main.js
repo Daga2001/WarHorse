@@ -47,17 +47,17 @@ let hereWeGo = new Audio(`../sound/here-we-go.mp3`)
  */
 let world = 
 [
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-]
+    [0,0,0,0,0,4,3,4,3,4],
+    [0,0,0,0,0,4,3,4,3,4],
+    [0,0,0,2,5,4,3,4,3,4],
+    [0,0,0,0,5,4,3,4,3,4],
+    [0,0,0,0,5,4,3,4,1,4],
+    [0,0,0,0,0,4,3,4,3,4],
+    [0,0,0,0,0,4,3,4,3,4],
+    [0,0,0,0,0,4,3,4,3,4],
+    [0,0,0,0,0,4,3,4,3,4],
+    [0,0,0,0,0,4,3,4,3,4],
+];
 
 let initWorld = util.deep_copy(world);
 
@@ -398,6 +398,8 @@ function cleanAllPossibleMovements(horse, id, world) {
                 if (horse.y-1 >= 0) {
                     if (world[horse.y-1][horse.x] == 0) {
                         paintSquare((horse.x)*squareSize,(horse.y-1)*squareSize,squareSize,squareSize,color);
+                        if (id == 1) world[horse.y-1][horse.x] = 4;
+                        else if (id == 2) world[horse.y-1][horse.x] = 3;
                         horse.nBoxes ++;
                     }
                 }
@@ -405,6 +407,8 @@ function cleanAllPossibleMovements(horse, id, world) {
                 if (horse.y+1 < world.length) {
                     if (world[horse.y+1][horse.x] == 0) {
                         paintSquare((horse.x)*squareSize,(horse.y+1)*squareSize,squareSize,squareSize,color);
+                        if (id == 1) world[horse.y+1][horse.x] = 4;
+                        else if (id == 2) world[horse.y+1][horse.x] = 3;
                         horse.nBoxes ++;
                     }
                 }
@@ -412,6 +416,8 @@ function cleanAllPossibleMovements(horse, id, world) {
                 if (horse.x-1 >= 0) {
                     if (world[horse.y][horse.x-1] == 0) {
                         paintSquare((horse.x-1)*squareSize,(horse.y)*squareSize,squareSize,squareSize,color);
+                        if (id == 1) world[horse.y][horse.x-1] = 4;
+                        else if (id == 2) world[horse.y][horse.x-1] = 3;
                         horse.nBoxes ++;
                     }
                 }
@@ -419,6 +425,8 @@ function cleanAllPossibleMovements(horse, id, world) {
                 if (horse.x+1 < world.length) {
                     if (world[horse.y][horse.x+1] == 0) {
                         paintSquare((horse.x+1)*squareSize,(horse.y)*squareSize,squareSize,squareSize,color);
+                        if (id == 1) world[horse.y][horse.x+1] = 4;
+                        else if (id == 2) world[horse.y][horse.x+1] = 3;
                         horse.nBoxes ++;
                     }
                 }
@@ -590,7 +598,7 @@ function endGame() {
 
 function restartGame() {
     world = util.deep_copy(initWorld);
-    makeWorld(world);
+    // makeWorld(world);
     paintWorld(world);
     h1.isTurn = false;
     h1.selectedMove = 0;
@@ -641,27 +649,35 @@ export function minimax(initNode, depth, id_init_horse) {
             let evalBoxes = function (h, node) {
                 if (node[h.y][h.x] == 5) {
                     // up
-                    if (h.y-1 >= 0) {
-                        if (node[h.y-1][h.x] == 0) {
-                            h.nBoxes ++;
+                    if (horse.y-1 >= 0) {
+                        if (world[horse.y-1][horse.x] == 0) {
+                            if (id == 1) world[horse.y-1][horse.x] = 4;
+                            else if (id == 2) world[horse.y-1][horse.x] = 3;
+                            horse.nBoxes ++;
                         }
                     }
                     // down
-                    if (h.y+1 < node.length) {
-                        if (node[h.y+1][h.x] == 0) {
-                            h.nBoxes ++;
+                    if (horse.y+1 < world.length) {
+                        if (world[horse.y+1][horse.x] == 0) {
+                            if (id == 1) world[horse.y+1][horse.x] = 4;
+                            else if (id == 2) world[horse.y+1][horse.x] = 3;
+                            horse.nBoxes ++;
                         }
                     }
                     // left
-                    if (h.x-1 >= 0) {
-                        if (node[h.y][h.x-1] == 0) {
-                            h.nBoxes ++;
+                    if (horse.x-1 >= 0) {
+                        if (world[horse.y][horse.x-1] == 0) {
+                            if (id == 1) world[horse.y][horse.x-1] = 4;
+                            else if (id == 2) world[horse.y][horse.x-1] = 3;
+                            horse.nBoxes ++;
                         }
                     }
                     // right
-                    if (h.x+1 < node.length) {
-                        if (node[h.y][h.x+1] == 0) {
-                            h.nBoxes ++;
+                    if (horse.x+1 < world.length) {
+                        if (world[horse.y][horse.x+1] == 0) {
+                            if (id == 1) world[horse.y][horse.x+1] = 4;
+                            else if (id == 2) world[horse.y][horse.x+1] = 3;
+                            horse.nBoxes ++;
                         }
                     }
                 }
@@ -1161,41 +1177,26 @@ function startGame() {
     let intervalID = setInterval(() => {
         if (h2.isTurn) {
             h2.selectedMove = minimax(world, depth, 2);
-            if (h2.selectedMove == null) {
-                if (h1.possibleMovements.length == 0) {
+            if (h2.selectedMove != null) {
+                moveHorse(2);   
+            }
+            h2.isTurn = false;
+            h1.isTurn = true;
+            paintPossibleMovements(1, world);
+            if (h1.possibleMovements.length == 0) {
+                if (h2.selectedMove == null) {
                     clearInterval(intervalID);
                     endGame();
                 }
                 else {
-                    h2.isTurn = false;
-                    h1.isTurn = true;
-                    paintPossibleMovements(1, world);
-                    if (h1.possibleMovements.length == 0) {
-                        if (h2.selectedMove == null) {
-                            clearInterval(intervalID);
-                            endGame();
-                        }
-                    }
-                    else{
-                        h1.selectedMove = 0;
-                        paintSelectedField(1);
-                    }
-                }
-            }
-            else {
-                moveHorse(2);
-                h2.isTurn = false;
-                h1.isTurn = true;
-                paintPossibleMovements(1, world);
-                if (h1.possibleMovements.length == 0) {
                     h2.isTurn = true;
                     h1.isTurn = false;
                 }
-                else{
-                    h1.selectedMove = 0;
-                    paintSelectedField(1);
-                }
-            }            
+            }
+            else{
+                h1.selectedMove = 0;
+                paintSelectedField(1);
+            }       
         }
     }, 1000);
 }
@@ -1213,7 +1214,7 @@ function startGame() {
     // hereWeGo.play()
 
     // sets the world
-    makeWorld(world);
+    // makeWorld(world);
 
     // The world is painted at the beginning
     paintWorld(world);    
