@@ -19,6 +19,19 @@ const restartButton = document.getElementById('restart-game-btn');
 //Dimensions
 const squareSize = 80
 
+//Difficulty
+let depth = 2;
+let difficulty = localStorage.getItem('difficulty');
+if (difficulty == '1') {
+    depth = 2;
+}
+else if (difficulty == '2') {
+    depth = 4;
+}
+else if (difficulty == '3') {
+    depth = 6;
+}
+
 //Sounds
 let audioBackground = new Audio(`../sound/main-theme.mp3`)
 let hereWeGo = new Audio(`../sound/here-we-go.mp3`)
@@ -46,19 +59,8 @@ let world =
     [0,0,0,0,0,0,0,0,0,0],
 ]
 
-let initWorld = 
-[
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-]
+let initWorld = util.deep_copy(world);
+
 // Cursor
 let cursor = {
     x: 0,
@@ -302,6 +304,7 @@ function makeWorld(world) {
 
 function paintPossibleMovements(id_horse, world) {
     possibleMovements(id_horse, world);
+    let horse = {};
     if(typeof(id_horse) == "number") {
         if (id_horse == 1) horse = h1;
         else if (id_horse == 2) horse = h2;
@@ -494,6 +497,7 @@ function paintHorse(horse, color) {
  */
 
 function paintSelectedField(id_horse) {
+    let horse = {};
     if(typeof(id_horse) == "number") {
         if (id_horse == 1) horse = h1;
         else if (id_horse == 2) horse = h2;
@@ -601,30 +605,7 @@ function restartGame() {
     endScreen.style.display = `none`;
     container.style.display = `flex`;
     updateStatistics();
-    let intervalID = setInterval(() => {
-        console.log(`is h2 turn: ${h2.isTurn}`);
-        if (h2.isTurn) {
-            possibleMovements(2, world);
-            if (h2.possibleMovements.length == 0) {
-                clearInterval(intervalID);
-                endGame();
-            }
-            else {
-                moveHorse(2);
-                h2.isTurn = false;
-                h1.isTurn = true;
-                paintPossibleMovements(1, world);
-                if (h1.possibleMovements.length == 0) {
-                    clearInterval(intervalID);
-                    endGame();
-                }
-                else{
-                    h1.selectedMove = 0;
-                    paintSelectedField(1);
-                }
-            }            
-        }
-    }, 1000);
+    startGame();
 }
 
 /**
@@ -638,31 +619,6 @@ function restartGame() {
 export function minimax(initNode, depth, id_init_horse) {
     let horse1 = util.deep_copy(h1);
     let horse2 = util.deep_copy(h2);
-    // sets initial nodes
-    // for (let i = 0; i < depth; i++) {
-    //   if (i % 2 == 0) {
-    //     stack.push(
-    //       { 
-    //         parent: null, 
-    //         type: "MAX", 
-    //         depth: i, 
-    //         val: -Infinity, 
-    //         structure: deep_copy(initNode),
-    //       }
-    //       );
-    //   }
-    //   else {
-    //     stack.push(
-    //       { 
-    //         parent: null, 
-    //         type: "MIN", 
-    //         depth: i, 
-    //         val: Infinity, 
-    //         structure: deep_copy(initNode),
-    //       }
-    //       );
-    //   }
-    // }
 
     /**
      * Builds up the initial tree, without evaluating leaf nodes.
@@ -681,6 +637,7 @@ export function minimax(initNode, depth, id_init_horse) {
     
         let body = function (parent, childrenType, horse, utility, h_id, field) {
             let i_children = [];
+            let move = 0;
             let evalBoxes = function (h, node) {
                 if (node[h.y][h.x] == 5) {
                     // up
@@ -724,7 +681,8 @@ export function minimax(initNode, depth, id_init_horse) {
                 h.y -= 1;
                 h.x -= 2;
                 evalBoxes(h, node);
-                h.selectedMove = 0;
+                h.selectedMove = move;
+                move++;
                 node[h.y][h.x] = h_id;
                 let newNode = { 
                         id: util.deep_copy(c),
@@ -761,7 +719,8 @@ export function minimax(initNode, depth, id_init_horse) {
                 h.y -= 2;
                 h.x -= 1; 
                 evalBoxes(h, node);
-                h.selectedMove = 1;
+                h.selectedMove = move;
+                move++;
                 node[h.y][h.x] = h_id;
                 let newNode = { 
                         id: util.deep_copy(c),
@@ -798,7 +757,8 @@ export function minimax(initNode, depth, id_init_horse) {
                 h.y -= 2;
                 h.x += 1; 
                 evalBoxes(h, node);
-                h.selectedMove = 2;
+                h.selectedMove = move;
+                move++;
                 node[h.y][h.x] = h_id;
                 let newNode = { 
                         id: util.deep_copy(c),
@@ -835,7 +795,8 @@ export function minimax(initNode, depth, id_init_horse) {
                 h.y -= 1;
                 h.x += 2; 
                 evalBoxes(h, node);
-                h.selectedMove = 3;
+                h.selectedMove = move;
+                move++;
                 node[h.y][h.x] = h_id;
                 let newNode = { 
                         id: util.deep_copy(c),
@@ -872,7 +833,8 @@ export function minimax(initNode, depth, id_init_horse) {
                 h.y += 1;
                 h.x += 2; 
                 evalBoxes(h, node);
-                h.selectedMove = 4;
+                h.selectedMove = move;
+                move++;
                 node[h.y][h.x] = h_id;
                 let newNode = { 
                         id: util.deep_copy(c),
@@ -909,7 +871,8 @@ export function minimax(initNode, depth, id_init_horse) {
                 h.y += 2;
                 h.x += 1; 
                 evalBoxes(h, node);
-                h.selectedMove = 5;
+                h.selectedMove = move;
+                move++;
                 node[h.y][h.x] = h_id;
                 let newNode = { 
                         id: util.deep_copy(c),
@@ -946,7 +909,8 @@ export function minimax(initNode, depth, id_init_horse) {
                 h.y += 2;
                 h.x -= 1; 
                 evalBoxes(h, node);
-                h.selectedMove = 6;
+                h.selectedMove = move;
+                move++;
                 node[h.y][h.x] = h_id;
                 let newNode = { 
                         id: util.deep_copy(c),
@@ -983,7 +947,8 @@ export function minimax(initNode, depth, id_init_horse) {
                 h.y += 1;
                 h.x -= 2; 
                 evalBoxes(h, node);
-                h.selectedMove = 7;
+                h.selectedMove = move;
+                move++;
                 node[h.y][h.x] = h_id;
                 let newNode = { 
                         id: util.deep_copy(c),
@@ -1091,117 +1056,148 @@ export function minimax(initNode, depth, id_init_horse) {
      * @param {Number} i index where the pointer begins the trace in tree.
      */
 
-    let backtrackTree = function (tree, i) {
+    let backtrackTree = function (tree) {
 
-        let evalNode = function (node, parent, grandPa) {
-            if (parent != null) {
-                if (parent.type == "MAX") {
-                    if (parent.val == -Infinity) {
-                        parent.val = util.deep_copy(node).val;
-                    }
-                    else {
-                        // alfa-beta pruning
-                        if (node.val > parent.val) {
-                            parent.val = util.deep_copy(node).val;
-                        }
-                        else {
-                            // break
-                        }
-                    }
-                }
-                else if (parent.type == "MIN") {
-                    if (parent.val == Infinity) {
-                        parent.val = util.deep_copy(node).val;
-                    }
-                    else {
-                        // alfa-beta pruning
-                        if (node.val < parent.val) {
-                            parent.val = util.deep_copy(node).val;
-                        }
-                        else {
-                            // break
-                        }
-                    }
-                }
+        /**
+         * The recursive body of minimax algorithm.
+         * @param {Number} i_node index of current node 
+         * @param {*} a 
+         * @param {*} b 
+         */
+
+        let recursiveBody = function (i_node) {
+            let node = tree[i_node];
+            let parent = node.parent;
+
+            if (node.children == null) {
+                return node;
             }
-            
-            if (grandPa != null) {
-                if (grandPa.type == "MAX") {
-                    if (grandPa.val == -Infinity) {
-                        grandPa.val = util.deep_copy(parent).val;
-                    }
-                    else {
-                        // alfa-beta pruning
-                        if (parent.val > grandPa.val) {
-                            grandPa.val = util.deep_copy(grandPa).val;
-                        }
-                        else {
-                            // break
+            else if (node.type == "MAX") {
+                for(let i = 0; i < node.children.length; i++) {
+                    let i_child = node.children[i];
+                    node.val = Math.max(node.val, recursiveBody(i_child).val);
+                    if(parent != null) {
+                        // if(parent.val == Infinity) parent.val = util.deep_copy(node).val;
+                        if(parent.val <= node.val) {
+                            break;
                         }
                     }
                 }
-                else if (grandPa.type == "MIN") {
-                    if (grandPa.val == Infinity) {
-                        grandPa.val = util.deep_copy(parent).val;
-                    }
-                    else {
-                        // alfa-beta pruning
-                        if (parent.val > grandPa.val) {
-                            grandPa.val = util.deep_copy(grandPa).val;
-                        }
-                        else {
-                            // break
+                return node;
+            }
+            else if (node.type == "MIN") {
+                for(let i = 0; i < node.children.length; i++) {
+                    let i_child = node.children[i];
+                    node.val = Math.min(node.val, recursiveBody(i_child).val);
+                    if(parent != null) {
+                        // if(parent.val == -Infinity) parent.val = util.deep_copy(node).val;
+                        if(node.val <= parent.val) {
+                            break;
                         }
                     }
                 }
+                return node;
             }
         }
 
-        let node = tree[i];
-        let parent = null;
-        if (node.parent != null) parent = node.parent;
-        let grandPa = null;
-        if (parent.parent != null) grandPa = parent.parent;
+        // --------------------------------------------------------------
+        // recursive body
+        // --------------------------------------------------------------
 
-        evalNode(node, parent, grandPa);
+        let res = recursiveBody(0);
 
-        return [grandPa, parent, node];
+        return res;
+    }
+
+    /**
+     * Picks the minimax's choice according the rootNode's children values.
+     * @param {Object} rootNode 
+     */
+
+    let pickSolution = function(rootNode) {
+        if (rootNode.children == null) return null;
+        if (rootNode.children.length == 0) return null;
+        let best = rootNode.children[0];
+        for(let i = 1; i < rootNode.children.length; i++) {
+            if (best < rootNode.children[i]) {
+                best = rootNode.children[i]
+            }
+        }
+        let node = tree[best];
+        h2.possibleMovements = node.horse2.possibleMovements;
+        return node.horse2.selectedMove;
     }
 
     // ==============================================================
     // 1. Tree Building.
     // 2. Evaluating the scores for the leaf nodes based on the evaluation function.
     // ==============================================================
+    
     let queue = [];
     let tree = [];
 
     let initBacktrackIndex = buildTree(queue, tree);
-    console.log(initBacktrackIndex);
+
     // ==============================================================
     // 3. Backtracking from the leaf to the root nodes.
     // ==============================================================
     
-    let res = backtrackTree(tree, initBacktrackIndex);
-
-    return res;
+    let rootNode = backtrackTree(tree);
 
     // ==============================================================
     // 4. At the root node, choose the node with the maximum value 
     // and select the respective move.
     // ==============================================================
 
+    let choice = pickSolution(rootNode);
+    return choice;
   }
 
 /**
- * Performs the next mario's movement.
- * @param {Object} mario 
- * @param {List} sol 
+ * starts the game.
  */
 
-function nextMovement(sol) {
-    let nextMov = sol.shift()
-    console.log(sol)
-    moveMario(nextMov)
+function startGame() {
+    let intervalID = setInterval(() => {
+        if (h2.isTurn) {
+            h2.selectedMove = minimax(world, depth, 2);
+            if (h2.selectedMove == null) {
+                if (h1.possibleMovements.length == 0) {
+                    clearInterval(intervalID);
+                    endGame();
+                }
+                else {
+                    h2.isTurn = false;
+                    h1.isTurn = true;
+                    paintPossibleMovements(1, world);
+                    if (h1.possibleMovements.length == 0) {
+                        if (h2.selectedMove == null) {
+                            clearInterval(intervalID);
+                            endGame();
+                        }
+                    }
+                    else{
+                        h1.selectedMove = 0;
+                        paintSelectedField(1);
+                    }
+                }
+            }
+            else {
+                moveHorse(2);
+                h2.isTurn = false;
+                h1.isTurn = true;
+                paintPossibleMovements(1, world);
+                if (h1.possibleMovements.length == 0) {
+                    h2.isTurn = true;
+                    h1.isTurn = false;
+                }
+                else{
+                    h1.selectedMove = 0;
+                    paintSelectedField(1);
+                }
+            }            
+        }
+    }, 1000);
 }
 
 //====================================================================================
@@ -1221,35 +1217,9 @@ function nextMovement(sol) {
 
     // The world is painted at the beginning
     paintWorld(world);    
-    let x = minimax(world, 3, 2);
-    console.log(x);
-    // console.log(x.includes({ x: Number, y: Number, bonus: Boolean, dir: 7 }));
     
     // When the machine starts to move
-    // let intervalID = setInterval(() => {
-    //     console.log(`is h2 turn: ${h2.isTurn}`);
-    //     if (h2.isTurn) {
-    //         possibleMovements(2, world);
-    //         if (h2.possibleMovements.length == 0) {
-    //             clearInterval(intervalID);
-    //             endGame();
-    //         }
-    //         else {
-    //             moveHorse(2);
-    //             h2.isTurn = false;
-    //             h1.isTurn = true;
-    //             paintPossibleMovements(1, world);
-    //             if (h1.possibleMovements.length == 0) {
-    //                 clearInterval(intervalID);
-    //                 endGame();
-    //             }
-    //             else{
-    //                 h1.selectedMove = 0;
-    //                 paintSelectedField(1);
-    //             }
-    //         }            
-    //     }
-    // }, 1000)    
+    startGame();
 
     // Button listener
     restartButton.addEventListener('mousedown', () => {

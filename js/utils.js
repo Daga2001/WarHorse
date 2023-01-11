@@ -152,6 +152,21 @@ export function  getMousePos(canvas, evt, scale) {
 }
 
 /**
+ * Finds and retrieves an existing element in a list.
+ * @param {*} e 
+ * @param {List} list 
+ */
+
+export function getElement(e, list){
+  for (let i = 0; i < list.length; i++) {
+    if(e == list[i]) {
+      return e;
+    }
+  }
+  throw `the element ${e} doesn't exist in the list ${list}`
+}
+
+/**
  * Checks if a point is inside a rectangle;
  * @param {Object} point
  * @param {Object} rect 
