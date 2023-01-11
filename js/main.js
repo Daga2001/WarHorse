@@ -89,9 +89,13 @@ let h2 = {
 
 // tree
 let tree = {
+    parent: null,
     x: 0,
     y: 0,
     depth: 0,
+    stack: [],
+    type: "MAX",
+    val: -Infinity,
 }
 
 // computing time
@@ -124,51 +128,59 @@ function paintSquare(x,y,width,height,color) {
 
 /**
  * Abstracts all posible movements from horse's position.
- * @param {Object} horse 
+ * @param {Number} id_horse 
  * @param {Object} world
  * @returns List
  */
 
-function possibleMovements(horse, world) {
+function possibleMovements(id_horse, world) {
     let movements = [];
+    let horse = {};
+    if(typeof(id_horse) == "number") {
+        if (id_horse == 1) horse = h1;
+        else if (id_horse == 2) horse = h2;
+    }
+    else if (typeof(id_horse) == "object") {
+        horse = id_horse;
+    }
     // 1
     if (horse.x-2 >= 0 && horse.y-1 >= 0 && (world[horse.y-1][horse.x-2] == 0 || world[horse.y-1][horse.x-2] == 5)) {
-        movements.push({ x: horse.x-2, y: horse.y-1, bonus: world[horse.y-1][horse.x-2] == 5, dir: 1});
+        movements.push(1);
         horse.possibleMovements.push({ x: horse.x-2, y: horse.y-1, bonus: world[horse.y-1][horse.x-2] == 5, dir: 1});
     }
     // 2
     if (horse.x-1 >= 0 && horse.y-2 >= 0 && (world[horse.y-2][horse.x-1] == 0 || world[horse.y-2][horse.x-1] == 5)) {
-        movements.push({ x: horse.x-1, y: horse.y-2, bonus: world[horse.y-2][horse.x-1] == 5, dir: 2});
+        movements.push(2);
         horse.possibleMovements.push({ x: horse.x-1, y: horse.y-2, bonus: world[horse.y-2][horse.x-1] == 5, dir: 2});
     }
     // 3
     if (horse.x+1 < world.length && horse.y-2 >= 0 && (world[horse.y-2][horse.x+1] == 0 || world[horse.y-2][horse.x+1] == 5)) {
-        movements.push({ x: horse.x+1, y: horse.y-2, bonus: world[horse.y-2][horse.x+1] == 5, dir: 3});
+        movements.push(3);
         horse.possibleMovements.push({ x: horse.x+1, y: horse.y-2, bonus: world[horse.y-2][horse.x+1] == 5, dir: 3});
     }
     // 4
     if (horse.x+2 < world.length && horse.y-1 >= 0 && (world[horse.y-1][horse.x+2] == 0 || world[horse.y-1][horse.x+2] == 5)) {
-        movements.push({ x: horse.x+2, y: horse.y-1, bonus: world[horse.y-1][horse.x+2] == 5, dir: 4});
+        movements.push(4);
         horse.possibleMovements.push({ x: horse.x+2, y: horse.y-1, bonus: world[horse.y-1][horse.x+2] == 5, dir: 4});
     }
     // 5
     if (horse.x+2 < world.length && horse.y+1 < world.length && (world[horse.y+1][horse.x+2] == 0 || world[horse.y+1][horse.x+2] == 5)) {
-        movements.push({ x: horse.x+2, y: horse.y+1, bonus: world[horse.y+1][horse.x+2] == 5, dir: 5});
+        movements.push(5);
         horse.possibleMovements.push({ x: horse.x+2, y: horse.y+1, bonus: world[horse.y+1][horse.x+2] == 5, dir: 5});
     }
     // 6
     if (horse.x+1 < world.length && horse.y+2 < world.length && (world[horse.y+2][horse.x+1] == 0 || world[horse.y+2][horse.x+1] == 5)) {
-        movements.push({ x: horse.x+1, y: horse.y+2, bonus: world[horse.y+2][horse.x+1] == 5, dir: 6});
+        movements.push(6);
         horse.possibleMovements.push({ x: horse.x+1, y: horse.y+2, bonus: world[horse.y+2][horse.x+1] == 5, dir: 6});
     }
     // 7
     if (horse.x-1 >= 0 && horse.y+2 < world.length && (world[horse.y+2][horse.x-1] == 0 || world[horse.y+2][horse.x-1] == 5)) {
-        movements.push({ x: horse.x-1, y: horse.y+2, bonus: world[horse.y+2][horse.x-1] == 5, dir: 7});
+        movements.push(7);
         horse.possibleMovements.push({ x: horse.x-1, y: horse.y+2, bonus: world[horse.y+2][horse.x-1] == 5, dir: 7});
     }
     // 8
     if (horse.x-2 >= 0 && horse.y+1 < world.length && (world[horse.y+1][horse.x-2] == 0 || world[horse.y+1][horse.x-2] == 5)) {
-        movements.push({ x: horse.x-2, y: horse.y+1, bonus: world[horse.y+1][horse.x-2] == 5, dir: 8});
+        movements.push(8);
         horse.possibleMovements.push({ x: horse.x-2, y: horse.y+1, bonus: world[horse.y+1][horse.x-2] == 5, dir: 8});
     }
     return movements;
@@ -284,12 +296,20 @@ function makeWorld(world) {
 
 /**
  * Paints a sketch of possible movements for player 1.
- * @param {Object} horse 
+ * @param {Number} id_horse 
  * @param {Object} world 
  */
 
-function paintPossibleMovements(horse, world) {
-    let movements = possibleMovements(horse, world);
+function paintPossibleMovements(id_horse, world) {
+    possibleMovements(id_horse, world);
+    if(typeof(id_horse) == "number") {
+        if (id_horse == 1) horse = h1;
+        else if (id_horse == 2) horse = h2;
+    }
+    else if (typeof(id_horse) == "object") {
+        horse = id_horse;
+    }
+    let movements = util.deep_copy(horse).possibleMovements;
     while(movements.length > 0) {
         let move = movements.pop();
         if (move.dir == 1) {
@@ -470,10 +490,17 @@ function paintHorse(horse, color) {
 
 /**
  * Paints the selected field by player 1.
- * @param {Object} horse  
+ * @param {Number} id_horse  
  */
 
-function paintSelectedField(horse) {
+function paintSelectedField(id_horse) {
+    if(typeof(id_horse) == "number") {
+        if (id_horse == 1) horse = h1;
+        else if (id_horse == 2) horse = h2;
+    }
+    else if (typeof(id_horse) == "object") {
+        horse = id_horse;
+    }
     let i = horse.selectedMove
     if (horse.possibleMovements[i].bonus) {
         showImage(horse.possibleMovements[i].x*squareSize,horse.possibleMovements[i].y*squareSize,squareSize,squareSize,"bonus")
@@ -483,10 +510,12 @@ function paintSelectedField(horse) {
 
 /**
  * Turns a horse in a given direction and paints him.
- * @param {Object} horse
  * @param {Number} id: 1 -> human, 2 -> machine.
  */
-function moveHorse(horse, id) {
+function moveHorse(id) {
+    let horse = {};
+    if (id == 1) horse = h1;
+    else if (id == 2) horse = h2;
     horse.nBoxes ++;
     let i = horse.selectedMove;
     let newMov = horse.possibleMovements[i];
@@ -575,28 +604,593 @@ function restartGame() {
     let intervalID = setInterval(() => {
         console.log(`is h2 turn: ${h2.isTurn}`);
         if (h2.isTurn) {
-            possibleMovements(h2, world);
+            possibleMovements(2, world);
             if (h2.possibleMovements.length == 0) {
                 clearInterval(intervalID);
                 endGame();
             }
             else {
-                moveHorse(h2, 2);
+                moveHorse(2);
                 h2.isTurn = false;
                 h1.isTurn = true;
-                paintPossibleMovements(h1, world);
+                paintPossibleMovements(1, world);
                 if (h1.possibleMovements.length == 0) {
                     clearInterval(intervalID);
                     endGame();
                 }
                 else{
                     h1.selectedMove = 0;
-                    paintSelectedField(h1);
+                    paintSelectedField(1);
                 }
             }            
         }
     }, 1000);
 }
+
+/**
+ * Returns a value which represents a choise using minimax algorithm.
+ * NOTE: this is a non-generic version of minimax algorithm.
+ * @param {Object} initNode 
+ * @param {Number} depth 
+ * @param {Number} id_init_horse
+ */
+
+export function minimax(initNode, depth, id_init_horse) {
+    let horse1 = util.deep_copy(h1);
+    let horse2 = util.deep_copy(h2);
+    // sets initial nodes
+    // for (let i = 0; i < depth; i++) {
+    //   if (i % 2 == 0) {
+    //     stack.push(
+    //       { 
+    //         parent: null, 
+    //         type: "MAX", 
+    //         depth: i, 
+    //         val: -Infinity, 
+    //         structure: deep_copy(initNode),
+    //       }
+    //       );
+    //   }
+    //   else {
+    //     stack.push(
+    //       { 
+    //         parent: null, 
+    //         type: "MIN", 
+    //         depth: i, 
+    //         val: Infinity, 
+    //         structure: deep_copy(initNode),
+    //       }
+    //       );
+    //   }
+    // }
+
+    /**
+     * Builds up the initial tree, without evaluating leaf nodes.
+     */
+
+    let buildTree = function (queue, tree) {
+
+        /**
+         * Determines which node must be expanded.
+         * @param {List} stack
+         */
+
+        let nextNode = function(stack) {
+            return stack.shift();
+        }
+    
+        let body = function (parent, childrenType, horse, utility, h_id, field) {
+            let i_children = [];
+            let evalBoxes = function (h, node) {
+                if (node[h.y][h.x] == 5) {
+                    // up
+                    if (h.y-1 >= 0) {
+                        if (node[h.y-1][h.x] == 0) {
+                            h.nBoxes ++;
+                        }
+                    }
+                    // down
+                    if (h.y+1 < node.length) {
+                        if (node[h.y+1][h.x] == 0) {
+                            h.nBoxes ++;
+                        }
+                    }
+                    // left
+                    if (h.x-1 >= 0) {
+                        if (node[h.y][h.x-1] == 0) {
+                            h.nBoxes ++;
+                        }
+                    }
+                    // right
+                    if (h.x+1 < node.length) {
+                        if (node[h.y][h.x+1] == 0) {
+                            h.nBoxes ++;
+                        }
+                    }
+                }
+                else {
+                    h.nBoxes += 1;
+                }
+            }
+            let possibles = possibleMovements(horse, parent.structure);
+    
+            // 1
+            if (possibles.includes(1)) {
+                c++;
+                i_children.push(c);
+                let h = util.deep_copy(horse);
+                let node = util.deep_copy(parent.structure);
+                node[h.y][h.x] = field;
+                h.y -= 1;
+                h.x -= 2;
+                evalBoxes(h, node);
+                h.selectedMove = 0;
+                node[h.y][h.x] = h_id;
+                let newNode = { 
+                        id: util.deep_copy(c),
+                        parent: parent,
+                        children: null,
+                        type: childrenType, 
+                        depth: parent.depth + 1, 
+                        val: utility, 
+                        structure: util.deep_copy(node),
+                        horse1: util.deep_copy(parent.horse1),
+                        horse2: util.deep_copy(parent.horse2),
+                        id_horse: h_id,
+                    };
+                if (h_id == 1) {
+                    newNode.horse1 = util.deep_copy(h);
+                }
+                else if (h_id == 2) {
+                    newNode.horse2 = util.deep_copy(h);
+                }
+                // evaluates leaf nodes.
+                if(parent.depth + 1 == depth ) {
+                    newNode.val = util.calcHeuristic(newNode.horse1, newNode.horse2);
+                }
+                queue.push(newNode);
+                tree.push(newNode);
+            }
+            // 2
+            if (possibles.includes(2)) {
+                c++;
+                i_children.push(c);
+                let h = util.deep_copy(horse);
+                let node = util.deep_copy(parent.structure);
+                node[h.y][h.x] = field;
+                h.y -= 2;
+                h.x -= 1; 
+                evalBoxes(h, node);
+                h.selectedMove = 1;
+                node[h.y][h.x] = h_id;
+                let newNode = { 
+                        id: util.deep_copy(c),
+                        parent: parent,
+                        children: null, 
+                        type: childrenType, 
+                        depth: parent.depth + 1, 
+                        val: utility, 
+                        structure: util.deep_copy(node),
+                        horse1: util.deep_copy(parent.horse1),
+                        horse2: util.deep_copy(parent.horse2),
+                        id_horse: h_id,
+                    };
+                if (h_id == 1) {
+                    newNode.horse1 = util.deep_copy(h);
+                }
+                else if (h_id == 2) {
+                    newNode.horse2 = util.deep_copy(h);
+                }
+                // evaluates leaf nodes.
+                if(parent.depth + 1 == depth ) {
+                    newNode.val = util.calcHeuristic(newNode.horse1, newNode.horse2);
+                }
+                queue.push(newNode);
+                tree.push(newNode);
+            }
+            // 3
+            if (possibles.includes(3)) {
+                c++;
+                i_children.push(c);
+                let h = util.deep_copy(horse);
+                let node = util.deep_copy(parent.structure);
+                node[h.y][h.x] = field;
+                h.y -= 2;
+                h.x += 1; 
+                evalBoxes(h, node);
+                h.selectedMove = 2;
+                node[h.y][h.x] = h_id;
+                let newNode = { 
+                        id: util.deep_copy(c),
+                        parent: parent, 
+                        children: null,
+                        type: childrenType, 
+                        depth: parent.depth + 1, 
+                        val: utility, 
+                        structure: util.deep_copy(node),
+                        horse1: util.deep_copy(parent.horse1),
+                        horse2: util.deep_copy(parent.horse2),
+                        id_horse: h_id,
+                    };
+                if (h_id == 1) {
+                    newNode.horse1 = util.deep_copy(h);
+                }
+                else if (h_id == 2) {
+                    newNode.horse2 = util.deep_copy(h);
+                }
+                // evaluates leaf nodes.
+                if(parent.depth + 1 == depth ) {
+                    newNode.val = util.calcHeuristic(newNode.horse1, newNode.horse2);
+                }
+                queue.push(newNode);
+                tree.push(newNode);
+            }
+            // 4
+            if (possibles.includes(4)) {
+                c++;
+                i_children.push(c);
+                let h = util.deep_copy(horse);
+                let node = util.deep_copy(parent.structure);
+                node[h.y][h.x] = field;
+                h.y -= 1;
+                h.x += 2; 
+                evalBoxes(h, node);
+                h.selectedMove = 3;
+                node[h.y][h.x] = h_id;
+                let newNode = { 
+                        id: util.deep_copy(c),
+                        parent: parent, 
+                        children: null,
+                        type: childrenType, 
+                        depth: parent.depth + 1, 
+                        val: utility, 
+                        structure: util.deep_copy(node),
+                        horse1: util.deep_copy(parent.horse1),
+                        horse2: util.deep_copy(parent.horse2),
+                        id_horse: h_id,
+                    };
+                if (h_id == 1) {
+                    newNode.horse1 = util.deep_copy(h);
+                }
+                else if (h_id == 2) {
+                    newNode.horse2 = util.deep_copy(h);
+                }
+                // evaluates leaf nodes.
+                if(parent.depth + 1 == depth ) {
+                    newNode.val = util.calcHeuristic(newNode.horse1, newNode.horse2);
+                }
+                queue.push(newNode);
+                tree.push(newNode);
+            }
+            // 5
+            if (possibles.includes(5)) {
+                c++;
+                i_children.push(c);
+                let h = util.deep_copy(horse);
+                let node = util.deep_copy(parent.structure);
+                node[h.y][h.x] = field;
+                h.y += 1;
+                h.x += 2; 
+                evalBoxes(h, node);
+                h.selectedMove = 4;
+                node[h.y][h.x] = h_id;
+                let newNode = { 
+                        id: util.deep_copy(c),
+                        parent: parent, 
+                        children: null,
+                        type: childrenType, 
+                        depth: parent.depth + 1, 
+                        val: utility, 
+                        structure: util.deep_copy(node),
+                        horse1: util.deep_copy(parent.horse1),
+                        horse2: util.deep_copy(parent.horse2),
+                        id_horse: h_id,
+                    };
+                if (h_id == 1) {
+                    newNode.horse1 = util.deep_copy(h);
+                }
+                else if (h_id == 2) {
+                    newNode.horse2 = util.deep_copy(h);
+                }
+                // evaluates leaf nodes.
+                if(parent.depth + 1 == depth ) {
+                    newNode.val = util.calcHeuristic(newNode.horse1, newNode.horse2);
+                }
+                queue.push(newNode);
+                tree.push(newNode);
+            }
+            // 6
+            if (possibles.includes(6)) {
+                c++;
+                i_children.push(c);
+                let h = util.deep_copy(horse);
+                let node = util.deep_copy(parent.structure);
+                node[h.y][h.x] = field;
+                h.y += 2;
+                h.x += 1; 
+                evalBoxes(h, node);
+                h.selectedMove = 5;
+                node[h.y][h.x] = h_id;
+                let newNode = { 
+                        id: util.deep_copy(c),
+                        parent: parent,
+                        children: null, 
+                        type: childrenType, 
+                        depth: parent.depth + 1, 
+                        val: utility, 
+                        structure: util.deep_copy(node),
+                        horse1: util.deep_copy(parent.horse1),
+                        horse2: util.deep_copy(parent.horse2),
+                        id_horse: h_id,
+                    };
+                if (h_id == 1) {
+                    newNode.horse1 = util.deep_copy(h);
+                }
+                else if (h_id == 2) {
+                    newNode.horse2 = util.deep_copy(h);
+                }
+                // evaluates leaf nodes.
+                if(parent.depth + 1 == depth ) {
+                    newNode.val = util.calcHeuristic(newNode.horse1, newNode.horse2);
+                }
+                queue.push(newNode);
+                tree.push(newNode);
+            }
+            // 7
+            if (possibles.includes(7)) {
+                c++;
+                i_children.push(c);
+                let h = util.deep_copy(horse);
+                let node = util.deep_copy(parent.structure);
+                node[h.y][h.x] = field;
+                h.y += 2;
+                h.x -= 1; 
+                evalBoxes(h, node);
+                h.selectedMove = 6;
+                node[h.y][h.x] = h_id;
+                let newNode = { 
+                        id: util.deep_copy(c),
+                        parent: parent, 
+                        children: null,
+                        type: childrenType, 
+                        depth: parent.depth + 1, 
+                        val: utility, 
+                        structure: util.deep_copy(node),
+                        horse1: util.deep_copy(parent.horse1),
+                        horse2: util.deep_copy(parent.horse2),
+                        id_horse: h_id,
+                    };
+                if (h_id == 1) {
+                    newNode.horse1 = util.deep_copy(h);
+                }
+                else if (h_id == 2) {
+                    newNode.horse2 = util.deep_copy(h);
+                }
+                // evaluates leaf nodes.
+                if(parent.depth + 1 == depth ) {
+                    newNode.val = util.calcHeuristic(newNode.horse1, newNode.horse2);
+                }
+                queue.push(newNode);
+                tree.push(newNode);
+            }
+            // 8
+            if (possibles.includes(8)) {
+                c++;
+                i_children.push(c);
+                let h = util.deep_copy(horse);
+                let node = util.deep_copy(parent.structure);
+                node[h.y][h.x] = field;
+                h.y += 1;
+                h.x -= 2; 
+                evalBoxes(h, node);
+                h.selectedMove = 7;
+                node[h.y][h.x] = h_id;
+                let newNode = { 
+                        id: util.deep_copy(c),
+                        parent: parent, 
+                        children: null,
+                        type: childrenType, 
+                        depth: parent.depth + 1, 
+                        val: utility, 
+                        structure: util.deep_copy(node),
+                        horse1: util.deep_copy(parent.horse1),
+                        horse2: util.deep_copy(parent.horse2),
+                        id_horse: h_id,
+                    };
+                if (h_id == 1) {
+                    newNode.horse1 = util.deep_copy(h);
+                }
+                else if (h_id == 2) {
+                    newNode.horse2 = util.deep_copy(h);
+                }
+                // evaluates leaf nodes.
+                if(parent.depth + 1 == depth ) {
+                    newNode.val = util.calcHeuristic(newNode.horse1, newNode.horse2);
+                }
+                queue.push(newNode);
+                tree.push(newNode);
+            }
+            parent.children = i_children;
+        }
+    
+        // --------------------------------------------------------------
+        // starting up with inital values
+        // --------------------------------------------------------------
+
+        // Parent node --> MAX
+        let parent = { 
+            id: 0,
+            parent: null,
+            children: null, 
+            type: "MAX", 
+            depth: 0, 
+            val: -Infinity, 
+            structure: util.deep_copy(initNode),
+            horse1: util.deep_copy(horse1),
+            horse2: util.deep_copy(horse2),
+            id_horse: id_init_horse, // id of last horse which moved.
+            }
+        tree.push(parent);
+
+        // counter to reference children indexes.
+        let c = 0;
+    
+        let childrenType = "MIN";
+        let h = util.deep_copy(parent.horse2);
+        let utility = Infinity;
+        let h_id = 2;
+        let field = 3;
+        
+        body(parent, childrenType, h, utility, h_id, field);
+
+        // --------------------------------------------------------------
+        // while loop to expand nodes
+        // --------------------------------------------------------------
+        let k = 0;
+        let initBacktrackIndex = 0;
+        let backtrackSaved = false;
+        while(queue.length > 0) {
+            k++;
+            let parent = nextNode(queue);
+            let childrenType = "";
+            let h = {};
+            let utility = 0;
+            let h_id = 0;
+            let field = 0;
+    
+            if (parent.type == "MAX") {
+                childrenType = "MIN";
+                h = util.deep_copy(parent.horse2);
+                utility = Infinity;
+                h_id = 2;
+                field = 3;
+            }
+            else if (parent.type == "MIN") {
+                childrenType = "MAX";
+                h = util.deep_copy(parent.horse1);
+                utility = -Infinity;
+                h_id = 1;
+                field = 4;
+            }
+
+            if(parent.depth == depth && !backtrackSaved) {
+                initBacktrackIndex = k;
+                backtrackSaved = true;
+            }
+    
+            if (parent.depth < depth) {
+                body(parent, childrenType, h, utility, h_id, field);
+            }
+        }
+        return initBacktrackIndex;
+    }    
+
+    /**
+     * Backtracks the tree from the leaf to the parent nodes.
+     * @param {List} tree 
+     * @param {Number} i index where the pointer begins the trace in tree.
+     */
+
+    let backtrackTree = function (tree, i) {
+
+        let evalNode = function (node, parent, grandPa) {
+            if (parent != null) {
+                if (parent.type == "MAX") {
+                    if (parent.val == -Infinity) {
+                        parent.val = util.deep_copy(node).val;
+                    }
+                    else {
+                        // alfa-beta pruning
+                        if (node.val > parent.val) {
+                            parent.val = util.deep_copy(node).val;
+                        }
+                        else {
+                            // break
+                        }
+                    }
+                }
+                else if (parent.type == "MIN") {
+                    if (parent.val == Infinity) {
+                        parent.val = util.deep_copy(node).val;
+                    }
+                    else {
+                        // alfa-beta pruning
+                        if (node.val < parent.val) {
+                            parent.val = util.deep_copy(node).val;
+                        }
+                        else {
+                            // break
+                        }
+                    }
+                }
+            }
+            
+            if (grandPa != null) {
+                if (grandPa.type == "MAX") {
+                    if (grandPa.val == -Infinity) {
+                        grandPa.val = util.deep_copy(parent).val;
+                    }
+                    else {
+                        // alfa-beta pruning
+                        if (parent.val > grandPa.val) {
+                            grandPa.val = util.deep_copy(grandPa).val;
+                        }
+                        else {
+                            // break
+                        }
+                    }
+                }
+                else if (grandPa.type == "MIN") {
+                    if (grandPa.val == Infinity) {
+                        grandPa.val = util.deep_copy(parent).val;
+                    }
+                    else {
+                        // alfa-beta pruning
+                        if (parent.val > grandPa.val) {
+                            grandPa.val = util.deep_copy(grandPa).val;
+                        }
+                        else {
+                            // break
+                        }
+                    }
+                }
+            }
+        }
+
+        let node = tree[i];
+        let parent = null;
+        if (node.parent != null) parent = node.parent;
+        let grandPa = null;
+        if (parent.parent != null) grandPa = parent.parent;
+
+        evalNode(node, parent, grandPa);
+
+        return [grandPa, parent, node];
+    }
+
+    // ==============================================================
+    // 1. Tree Building.
+    // 2. Evaluating the scores for the leaf nodes based on the evaluation function.
+    // ==============================================================
+    let queue = [];
+    let tree = [];
+
+    let initBacktrackIndex = buildTree(queue, tree);
+    console.log(initBacktrackIndex);
+    // ==============================================================
+    // 3. Backtracking from the leaf to the root nodes.
+    // ==============================================================
+    
+    let res = backtrackTree(tree, initBacktrackIndex);
+
+    return res;
+
+    // ==============================================================
+    // 4. At the root node, choose the node with the maximum value 
+    // and select the respective move.
+    // ==============================================================
+
+  }
 
 /**
  * Performs the next mario's movement.
@@ -614,7 +1208,7 @@ function nextMovement(sol) {
 // logical structure
 //====================================================================================
 
-try{
+// try{
     // Plays the background music
     // audioBackground.currentTime = 0
     // audioBackground.loop = true
@@ -627,32 +1221,35 @@ try{
 
     // The world is painted at the beginning
     paintWorld(world);    
-
-    // When machine starts to move
-    let intervalID = setInterval(() => {
-        console.log(`is h2 turn: ${h2.isTurn}`);
-        if (h2.isTurn) {
-            possibleMovements(h2, world);
-            if (h2.possibleMovements.length == 0) {
-                clearInterval(intervalID);
-                endGame();
-            }
-            else {
-                moveHorse(h2, 2);
-                h2.isTurn = false;
-                h1.isTurn = true;
-                paintPossibleMovements(h1, world);
-                if (h1.possibleMovements.length == 0) {
-                    clearInterval(intervalID);
-                    endGame();
-                }
-                else{
-                    h1.selectedMove = 0;
-                    paintSelectedField(h1);
-                }
-            }            
-        }
-    }, 1000)    
+    let x = minimax(world, 3, 2);
+    console.log(x);
+    // console.log(x.includes({ x: Number, y: Number, bonus: Boolean, dir: 7 }));
+    
+    // When the machine starts to move
+    // let intervalID = setInterval(() => {
+    //     console.log(`is h2 turn: ${h2.isTurn}`);
+    //     if (h2.isTurn) {
+    //         possibleMovements(2, world);
+    //         if (h2.possibleMovements.length == 0) {
+    //             clearInterval(intervalID);
+    //             endGame();
+    //         }
+    //         else {
+    //             moveHorse(2);
+    //             h2.isTurn = false;
+    //             h1.isTurn = true;
+    //             paintPossibleMovements(1, world);
+    //             if (h1.possibleMovements.length == 0) {
+    //                 clearInterval(intervalID);
+    //                 endGame();
+    //             }
+    //             else{
+    //                 h1.selectedMove = 0;
+    //                 paintSelectedField(1);
+    //             }
+    //         }            
+    //     }
+    // }, 1000)    
 
     // Button listener
     restartButton.addEventListener('mousedown', () => {
@@ -662,7 +1259,7 @@ try{
     // When a mouse button is pressed.
     canvas.addEventListener('mousedown', ( event ) => {        
         if (h1.isTurn) { 
-            moveHorse(h1, 1);
+            moveHorse(1);
             h1.isTurn = false;
             h2.isTurn = true;
             console.log(world);
@@ -688,7 +1285,7 @@ try{
                 else {
                     h1.selectedMove -= 1;
                 }
-                paintSelectedField(h1);
+                paintSelectedField(1);
             }
             // down - right
             else if (cursor.y == cursor.prevY + scale || cursor.x == cursor.prevX + scale) {
@@ -702,7 +1299,7 @@ try{
                 else {
                     h1.selectedMove += 1;
                 }
-                paintSelectedField(h1);
+                paintSelectedField(1);
             }
             cursor.prevX = event.pageX;
             cursor.prevY = event.pageY;
@@ -724,7 +1321,7 @@ try{
     //         moveMario("right")
     //     }
     // })
-}
-catch(e) {
-    console.error(`An error has occurred during game's execution: ${e}`);
-}
+// }
+// catch(e) {
+//     console.error(`An error has occurred during game's execution: ${e}`);
+// }

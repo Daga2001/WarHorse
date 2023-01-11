@@ -80,6 +80,7 @@ export function sleep(delay) {
  */
 
 export function deep_copy(object) {
+    if (typeof(object) == "number") return object + 0;
     return JSON.parse(JSON.stringify(object));
 }
 
@@ -123,14 +124,13 @@ export function euclidianDistance(a, b){
 }
 
 /**
- * Determines the heuristic's structure for our A* algorithm.
- * @param {Object} a {posx: ..., posy: ...} 
- * @param {Object} b {posx: ..., posy: ...}
+ * Determines the heuristic's structure for our minimax algorithm.
+ * @param {Object} horse1
+ * @param {Object} horse2
  */
 
- export function calcHeuristic(a, b){
-  // return euclidianDistance(a,b) / Math.pow(10,99);
-  return manhattanDist(a,b) / 2;
+ export function calcHeuristic(horse1, horse2){
+  return horse2.nBoxes - horse1.nBoxes;
 }
 
 /**
