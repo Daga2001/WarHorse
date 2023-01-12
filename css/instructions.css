@@ -1,0 +1,259 @@
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin:0;
+    padding:0;
+    border:0;
+    font-size:100%;
+    font:inherit;
+    vertical-align:baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display:block;
+}
+body {
+    line-height:1;
+}
+ol, ul {
+    list-style:none;
+}
+blockquote, q {
+    quotes:none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content:'';
+    content:none;
+}
+table {
+    border-collapse:collapse;
+    border-spacing:0;
+}
+
+/* apply a natural box layout model to all elements */
+*,*::before,*::after,*:before,*:after {
+    -moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box;
+}
+
+/* inputs */
+input,button,textarea,select {
+    color:inherit;
+    font-size:inherit;
+    font-style:inherit;
+    font-family:inherit;
+    -webkit-border-radius:0;
+    border-radius:0;
+    -webkit-padding-start:0;
+    align-items:flex-start;
+    text-index:0;
+    border:none;
+    outline:none;
+    background:none;
+    padding:0;
+    margin:0;
+    width:auto;
+    height:auto;
+    line-height:1em;
+}
+
+/* inputs appearance (not for every input)  */
+input[type=text],input[type=reset],input[type=password],input[type=search],input[type=email],input[type=tel],input[type=url],input[type=time],input[type=week],input[type=month],input[type=date],input[type=datetime],input[type=datetime-local],input[type=number],
+input[type=submit],input[type=reset],input[type=color],input[type=file],
+button,textarea,select {
+    height:1em;
+    -webkit-appearance:none;
+       -moz-appearance:none;
+            appearance:none;
+}
+
+/* input color width */
+input[type=color] {
+    width:1em;
+}
+
+/* IE clear cross */
+input::-ms-clear {
+    display:none;
+}
+
+/* details and summary */
+details, summary {
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    appearance:none;
+}
+
+/* text size adjusting */
+body {
+    -webkit-text-size-adjust:100%;
+       -moz-text-size-adjust:100%;
+            text-size-adjust:100%;
+}
+
+/* mark */
+mark {background:none;}
+
+/* Font smoothing */
+/**,*::before,*::after,*:before,*:after {
+     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}*/
+
+/* hr */
+hr {
+    height:1px;
+    margin:0;padding:0;
+}
+
+/* u */
+u {
+    text-decoration:none;
+}
+
+/* th */
+table th {
+    text-align:left;
+}
+
+/* a */
+a {
+    color:inherit;
+    outline:none;
+}
+
+@font-face {
+  font-family: tron;
+  src: url(../fonts/tron.TTF);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+html,
+body,
+.canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.canvas {
+  visibility: hidden;
+}
+.game {
+  position: relative;
+  min-width: 100vw;
+  min-height: 100vh;
+  padding: 20px;
+  background: radial-gradient(#232323, #000000);
+  color: #ecf0f1;
+  font-family: Helvetica, Arial, sans-serif;
+  text-align: center;
+  text-shadow: 0 0 2px #ecf0f1;
+  background: radial-gradient(#232323, #000000);
+}
+.game__score {
+  text-align: left;
+  position: absolute;
+  left: 5px;
+  top: 5px;
+}
+.game__score span {
+  font-weight: bold;
+}
+.game__title {
+  width: 100%;
+  margin: 0 auto;
+}
+.game__title h2 {
+  font-size: 3rem;
+  font-family: tron, helvetica, sans-serif;
+  text-shadow: 0 0 10px #4ddaff;
+  font-weight: bold;
+  text-transform: capitalize;
+  margin-bottom: 30px;
+}
+.game__title h3 {
+  font-size: 2rem;
+  font-weight: bold;
+  text-transform: capitalize;
+  margin-bottom: 20px;
+}
+.game__title ul {
+  margin-bottom: 30px;
+}
+.game__title ul li {
+  margin: 5px;
+}
+.game__touch,
+.game__colors {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.game__touch li:not(:last-of-type) {
+  margin-right: 20px;
+}
+.game__touch span {
+  display: inline-block;
+  padding: 20px;
+  border: 1px solid #ecf0f1;
+  font-size: 3rem;
+}
+.game__colors {
+  display: flex;
+  flex-direction: column;
+}
+.game__colors input {
+  width: 2rem;
+  height: 1.5rem;
+  cursor: pointer;
+  opacity: 0.9;
+  transition: ease-out 0.2s;
+}
+.game__colors input:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+.game__winner {
+  display: none;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+.game__winner .value {
+  font-weight: bold;
+}
+.game__launcher {
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-shadow: 0 0 2px #ecf0f1;
+  transition: ease-out 0.3s;
+}
+.game__launcher:hover {
+  transform: scale(1.1) translateY(-2px);
+}
+.game-start {
+  display: none;
+}

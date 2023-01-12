@@ -2,7 +2,7 @@
 // LIBRARIES
 //====================================================================================
 import * as util from './utils.js'
-util
+
 //====================================================================================
 // DECLARATION OF VARIABLES
 //====================================================================================
@@ -32,9 +32,8 @@ else if (difficulty == '3') {
     depth = 6;
 }
 
-//Sounds
-let audioBackground = new Audio(`../sound/main-theme.mp3`)
-let hereWeGo = new Audio(`../sound/here-we-go.mp3`)
+// tests: allows you to generate your own world
+const test = false;
 
 //world
 /**
@@ -49,11 +48,11 @@ let world =
 [
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,1,0,2,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,5,0,5,0,0,0],
-    [0,0,0,0,0,0,0,0,0,5],
-    [0,0,0,0,0,0,0,5,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
@@ -102,6 +101,8 @@ let tree = {
 
 // computing time
 let computingTime = 0;
+let start = 0;
+let end = 0;
 
 // Tests
 let sol = ["up","right","right","right","right","down","right","right","right","right","right","right",
@@ -598,7 +599,7 @@ function endGame() {
 
 function restartGame() {
     world = util.deep_copy(initWorld);
-    // makeWorld(world);
+    if (!test) makeWorld(world);
     paintWorld(world);
     h1.isTurn = false;
     h1.selectedMove = 0;
@@ -1166,7 +1167,10 @@ export function minimax(initNode, depth, id_init_horse) {
 function startGame() {
     let intervalID = setInterval(() => {
         if (h2.isTurn) {
+            start = performance.now();
             h2.selectedMove = minimax(world, depth, 2);
+            end = performance.now();
+            computingTime = Math.abs(end-start);
             if (h2.selectedMove != null) {
                 moveHorse(2);   
             }
@@ -1195,16 +1199,9 @@ function startGame() {
 // logical structure
 //====================================================================================
 
-// try{
-    // Plays the background music
-    // audioBackground.currentTime = 0
-    // audioBackground.loop = true
-    // audioBackground.play()
-    // hereWeGo.currentTime = 0
-    // hereWeGo.play()
-
+try{
     // sets the world
-    // makeWorld(world);
+    if (!test) makeWorld(world);
 
     // The world is painted at the beginning
     paintWorld(world);    
@@ -1266,22 +1263,7 @@ function startGame() {
         }
     });
 
-    // Key listener
-    // document.body.addEventListener('keydown', ( event ) => {
-    //     if(event.key == "ArrowUp") {
-    //         moveMario("up")
-    //     }
-    //     if(event.key == "ArrowDown") {
-    //         moveMario("down")
-    //     }
-    //     if(event.key == "ArrowLeft") {
-    //         moveMario("left")
-    //     }
-    //     if(event.key == "ArrowRight") {
-    //         moveMario("right")
-    //     }
-    // })
-// }
-// catch(e) {
-//     console.error(`An error has occurred during game's execution: ${e}`);
-// }
+}
+catch(e) {
+    console.error(`An error has occurred during game's execution: ${e} at line ${e.stack}`);
+}

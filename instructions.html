@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/instructions.css">
+    <title>WarHorses</title>
+</head>
+<body>
+    <div class="game">
+        <canvas width="800" height="600" class="canvas js-canvas"></canvas>
+        <div class="game__title">
+            <h2>Autores</h2>
+            <ul class="game__explaination">
+                <li>David Alberto Guzmán</li>
+                <li>Diego Fernando Chaverra</li>
+            </ul>
+            <h3>¿ Cómo jugar ?</h3>
+            <ul class="game__explaination">
+                <li>El juego consiste en pintar la mayor</li>
+                <li>Cantidad de casillas posibles.</li>
+                <li>Para ganar debes vencer a la inteligencia Artificial.</li>
+                <li>El juego termina cuando ninguno de los dos caballos pueda moverse.</li>
+                <li>Recuerda que las casillas con bono pintan las 4 casillas adyacentes.</li>
+            </ul>
+            <h3>Rotación del Mouse</h3>
+            <ul class="game__touch">
+                <li><span>&#8593;</span> ó <span>&#8592;</span> Se rota hacia la izquierda (sentido antihorario)</li>
+                <li><span>&#8595;</span> ó <span>&#8594;</span> Se rota hacia la derecha (sentido horario)</li>
+            </ul>
+            <div class="js-game__selector">
+                <ul class="game__colors">
+                    <li>
+                        <label for="">Color del jugador 1</label>
+                        <input type="color" id="color1" name="color1" value="#5bfe3e"></li>
+                    <li>
+                        <label for="">Color del jugador 2 (IA)</label>
+                        <input type="color" id="color2" name="color2" value="#fa4b2a"></li>
+                </ul>
+            </div>
+            <div class="game__winner">Winner : <span class="value"></span></div>
+            <button class="game__launcher js-launcher"><a href="./index.html">Volver</a></button>
+        </div>
+    </div>
+</body>
