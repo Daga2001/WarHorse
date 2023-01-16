@@ -33,7 +33,7 @@ else if (difficulty == '3') {
 }
 
 // tests: allows you to generate your own world
-const test = false;
+const test = true;
 
 //world
 /**
@@ -48,11 +48,11 @@ let world =
 [
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,1,0,2,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,5,0,5,0,0,0],
+    [0,0,0,0,0,5,0,0,0,5],
+    [0,0,0,5,0,0,0,5,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
@@ -140,10 +140,15 @@ function possibleMovements(id_horse, world) {
     let movements = [];
     let horse = {};
     if(typeof(id_horse) == "number") {
-        if (id_horse == 1) horse = h1;
-        else if (id_horse == 2) horse = h2;
+        if (id_horse == 1) { 
+            horse = h1;
+        }
+        else if (id_horse == 2) {
+            horse = h2;
+        }
     }
     else if (typeof(id_horse) == "object") {
+        id_horse.possibleMovements = [];
         horse = id_horse;
     }
     // 1
@@ -307,10 +312,15 @@ function paintPossibleMovements(id_horse, world) {
     possibleMovements(id_horse, world);
     let horse = {};
     if(typeof(id_horse) == "number") {
-        if (id_horse == 1) horse = h1;
-        else if (id_horse == 2) horse = h2;
+        if (id_horse == 1) { 
+            horse = h1;
+        }
+        else if (id_horse == 2) {
+            horse = h2;
+        }
     }
     else if (typeof(id_horse) == "object") {
+        id_horse.possibleMovements = [];
         horse = id_horse;
     }
     let movements = util.deep_copy(horse).possibleMovements;
@@ -508,10 +518,15 @@ function paintHorse(horse, color) {
 function paintSelectedField(id_horse) {
     let horse = {};
     if(typeof(id_horse) == "number") {
-        if (id_horse == 1) horse = h1;
-        else if (id_horse == 2) horse = h2;
+        if (id_horse == 1) { 
+            horse = h1;
+        }
+        else if (id_horse == 2) {
+            horse = h2;
+        }
     }
     else if (typeof(id_horse) == "object") {
+        id_horse.possibleMovements = [];
         horse = id_horse;
     }
     let i = horse.selectedMove
@@ -698,8 +713,11 @@ export function minimax(initNode, depth, id_init_horse) {
                     h.nBoxes += 1;
                 }
             }
+            if (parent.depth >= 2) {
+                console.log('test');
+            }
             let possibles = possibleMovements(horse, parent.structure);
-    
+            
             // 1
             if (possibles.includes(1)) {
                 c++;
@@ -1143,7 +1161,7 @@ export function minimax(initNode, depth, id_init_horse) {
     let tree = [];
 
     let initBacktrackIndex = buildTree(queue, tree);
-    console.log(maxVal);
+    console.log(tree);
 
     // ==============================================================
     // 3. Backtracking from the leaf to the root nodes.
