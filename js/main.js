@@ -658,18 +658,6 @@ export function minimax(initNode, depth, id_init_horse) {
         let nextNode = function(stack) {
             return stack.shift();
         }
-
-        /**
-         * Checks if a node is a leaf, to assign it a value.
-         * @param {Object} node
-         */
-        let evalNode = function(parent, node) {
-            // evaluates leaf nodes.
-            if(parent.depth + 1 == depth) {
-                node.val = util.calcHeuristic(node.horse1, node.horse2);
-                if (maxVal < node.val) maxVal = node.val;
-            }
-        }
     
         let body = function (parent, childrenType, horse, utility, h_id, field) {
             let i_children = [];
@@ -749,7 +737,6 @@ export function minimax(initNode, depth, id_init_horse) {
                 else if (h_id == 2) {
                     newNode.horse2 = util.deep_copy(h);
                 }
-                evalNode(parent, newNode);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -784,7 +771,6 @@ export function minimax(initNode, depth, id_init_horse) {
                 else if (h_id == 2) {
                     newNode.horse2 = util.deep_copy(h);
                 }
-                evalNode(parent, newNode);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -819,7 +805,6 @@ export function minimax(initNode, depth, id_init_horse) {
                 else if (h_id == 2) {
                     newNode.horse2 = util.deep_copy(h);
                 }
-                evalNode(parent, newNode);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -854,7 +839,6 @@ export function minimax(initNode, depth, id_init_horse) {
                 else if (h_id == 2) {
                     newNode.horse2 = util.deep_copy(h);
                 }
-                evalNode(parent, newNode);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -889,7 +873,6 @@ export function minimax(initNode, depth, id_init_horse) {
                 else if (h_id == 2) {
                     newNode.horse2 = util.deep_copy(h);
                 }
-                evalNode(parent, newNode);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -924,7 +907,6 @@ export function minimax(initNode, depth, id_init_horse) {
                 else if (h_id == 2) {
                     newNode.horse2 = util.deep_copy(h);
                 }
-                evalNode(parent, newNode);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -959,7 +941,6 @@ export function minimax(initNode, depth, id_init_horse) {
                 else if (h_id == 2) {
                     newNode.horse2 = util.deep_copy(h);
                 }
-                evalNode(parent, newNode);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -994,11 +975,30 @@ export function minimax(initNode, depth, id_init_horse) {
                 else if (h_id == 2) {
                     newNode.horse2 = util.deep_copy(h);
                 }
-                evalNode(parent, newNode);
                 queue.push(newNode);
                 tree.push(newNode);
             }
-            parent.children = i_children;
+            // Just in case, when there're no children and the parent node != depth
+            if (i_children.length == 0 && parent.id > 0) {
+                c++;
+                i_children.push(c);
+                parent.children = i_children
+                let newNode = { 
+                    id: util.deep_copy(c),
+                    parent: parent, 
+                    children: null,
+                    type: childrenType, 
+                    depth: parent.depth + 1, 
+                    val: utility, 
+                    structure: util.deep_copy(parent.structure),
+                    horse1: util.deep_copy(parent.horse1),
+                    horse2: util.deep_copy(parent.horse2),
+                    id_horse: h_id,
+                };
+                queue.push(newNode);
+                tree.push(newNode);
+            }
+            else parent.children = i_children;
         }
     
         // --------------------------------------------------------------
@@ -1034,43 +1034,47 @@ export function minimax(initNode, depth, id_init_horse) {
         // --------------------------------------------------------------
         // while loop to expand nodes
         // --------------------------------------------------------------
+
         let k = 0;
         let initBacktrackIndex = 0;
         let backtrackSaved = false;
-        while(queue.length > 0) {
-            k++;
-            let parent = nextNode(queue);
-            let childrenType = "";
-            let h = {};
-            let utility = 0;
-            let h_id = 0;
-            let field = 0;
-    
-            if (parent.type == "MAX") {
-                childrenType = "MIN";
-                h = util.deep_copy(parent.horse2);
-                utility = Infinity;
-                h_id = 2;
-                field = 3;
-            }
-            else if (parent.type == "MIN") {
-                childrenType = "MAX";
-                h = util.deep_copy(parent.horse1);
-                utility = -Infinity;
-                h_id = 1;
-                field = 4;
-            }
+        if (tree.length > 1) {
+            while(queue.length > 0) {
+                k++;
+                let parent = nextNode(queue);
+                let childrenType = "";
+                let h = {};
+                let utility = 0;
+                let h_id = 0;
+                let field = 0;
+        
+                if (parent.type == "MAX") {
+                    childrenType = "MIN";
+                    h = util.deep_copy(parent.horse2);
+                    utility = Infinity;
+                    h_id = 2;
+                    field = 3;
+                }
+                else if (parent.type == "MIN") {
+                    childrenType = "MAX";
+                    h = util.deep_copy(parent.horse1);
+                    utility = -Infinity;
+                    h_id = 1;
+                    field = 4;
+                }
 
-            if(parent.depth == depth && !backtrackSaved) {
-                initBacktrackIndex = k;
-                backtrackSaved = true;
+                if(parent.depth == depth && !backtrackSaved) {
+                    initBacktrackIndex = k;
+                    backtrackSaved = true;
+                }
+        
+                if (parent.depth < depth) {
+                    body(parent, childrenType, h, utility, h_id, field);
+                }
             }
-    
-            if (parent.depth < depth) {
-                body(parent, childrenType, h, utility, h_id, field);
-            }
+            return initBacktrackIndex;
         }
-        return initBacktrackIndex;
+        else return null; 
     }    
 
     /**
@@ -1080,6 +1084,15 @@ export function minimax(initNode, depth, id_init_horse) {
      */
 
     let backtrackTree = function (tree) {
+
+        /**
+         * Checks if a node is a leaf, to assign it a value.
+         * @param {Object} node
+         */
+        let evalNode = function(node) {
+            // evaluates leaf nodes.
+            node.val = util.calcHeuristic(node.horse1, node.horse2);
+        }
 
         /**
          * The recursive body of minimax algorithm.
@@ -1093,6 +1106,7 @@ export function minimax(initNode, depth, id_init_horse) {
             let parent = node.parent;
 
             if (node.children == null) {
+                evalNode(node)
                 return node;
             }
             else if (node.type == "MAX") {
@@ -1156,11 +1170,13 @@ export function minimax(initNode, depth, id_init_horse) {
     // 1. Tree Building.
     // 2. Evaluating the scores for the leaf nodes based on the evaluation function.
     // ==============================================================
-    let maxVal = 0;
     let queue = [];
     let tree = [];
 
     let initBacktrackIndex = buildTree(queue, tree);
+    if (initBacktrackIndex == null) { 
+        return null;
+    }
     console.log(tree);
 
     // ==============================================================
