@@ -33,9 +33,9 @@ else if (difficulty == '3') {
 }
 
 // tests: allows you to generate your own world
-let initialnBoxes1 = 7;
-let initialnBoxes2 = 8;
-const test = true;
+let initialnBoxes1 = 1;
+let initialnBoxes2 = 1;
+const test = false;
 
 //world
 /**
@@ -48,14 +48,14 @@ const test = true;
  */
 let world = 
 [
-    [0,0,0,0,0,3,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,4],
-    [0,0,3,0,3,0,0,0,4,4],
-    [0,3,3,3,0,1,0,4,0,4],
-    [0,0,3,0,3,0,0,0,4,0],
-    [0,0,0,0,0,0,4,0,0,0],
-    [0,0,0,0,0,2,0,0,0,0],
-    [0,0,0,0,0,0,0,5,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
 ];
@@ -697,6 +697,7 @@ export function minimax(initNode, depth, id_init_horse) {
             let move = 0;
             let evalBoxes = function (h, node) {
                 if (node[h.y][h.x] == 5) {
+                    h.nBoxes += 1;
                     // up
                     if (h.y-1 >= 0) {
                         if (node[h.y-1][h.x] == 0) {
