@@ -129,8 +129,8 @@ export function euclidianDistance(a, b){
  * @param {Object} horse2
  */
 
- export function calcHeuristic(horse1, horse2){
-  return horse2.nBoxes - horse1.nBoxes;
+ export function calcHeuristic(node){
+  return (node.horse2.nBoxes - node.horse1.nBoxes) + (node.horse2.nextMoves.length);
 }
 
 /**

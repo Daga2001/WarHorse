@@ -76,6 +76,7 @@ let h1 = {
     possibleMovements: [],
     selectedMove: 0, // index of possibleMovements array
     nBoxes: 1,
+    nextMoves: [],
 }
 
 // Horse's player 2
@@ -86,6 +87,7 @@ let h2 = {
     possibleMovements: [],
     selectedMove: 0, // index of possibleMovements array
     nBoxes: 1,
+    nextMoves: [],
 }
 
 // tree
@@ -701,9 +703,7 @@ export function minimax(initNode, depth, id_init_horse) {
                     h.nBoxes += 1;
                 }
             }
-            if (parent.depth >= 2) {
-                console.log('test');
-            }
+
             let possibles = possibleMovements(horse, parent.structure);
             
             // 1
@@ -733,9 +733,21 @@ export function minimax(initNode, depth, id_init_horse) {
                     };
                 if (h_id == 1) {
                     newNode.horse1 = util.deep_copy(h);
+                    let c_pos_h1 = h.possibleMovements;
+                    let c_pos_h2 = util.deep_copy(newNode.horse2.possibleMovements);
+                    newNode.horse1.nextMoves = possibleMovements(newNode.horse1, newNode.structure);
+                    newNode.horse2.nextMoves = possibleMovements(newNode.horse2, newNode.structure);
+                    newNode.horse1.possibleMovements = util.deep_copy(c_pos_h1);
+                    newNode.horse2.possibleMovements = util.deep_copy(c_pos_h2);
                 }
                 else if (h_id == 2) {
                     newNode.horse2 = util.deep_copy(h);
+                    let c_pos_h1 = util.deep_copy(newNode.horse1.possibleMovements);
+                    let c_pos_h2 = h.possibleMovements;
+                    newNode.horse1.nextMoves = possibleMovements(newNode.horse1, newNode.structure);
+                    newNode.horse2.nextMoves = possibleMovements(newNode.horse2, newNode.structure);
+                    newNode.horse1.possibleMovements = util.deep_copy(c_pos_h1);
+                    newNode.horse2.possibleMovements = util.deep_copy(c_pos_h2);
                 }
                 queue.push(newNode);
                 tree.push(newNode);
@@ -1091,7 +1103,7 @@ export function minimax(initNode, depth, id_init_horse) {
          */
         let evalNode = function(node) {
             // evaluates leaf nodes.
-            node.val = util.calcHeuristic(node.horse1, node.horse2);
+            node.val = util.calcHeuristic(node);
         }
 
         /**
