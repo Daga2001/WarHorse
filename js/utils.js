@@ -131,6 +131,8 @@ export function euclidianDistance(a, b){
 
  export function calcHeuristic(node){
   return (node.horse2.nBoxes - node.horse1.nBoxes) + (node.horse2.nextMoves.length);
+  // return (node.horse2.nBoxes - node.horse1.nBoxes) + (node.horse2.nextMoves.length-node.horse1.nextMoves.length);
+  // return (node.horse2.nBoxes - node.horse1.nBoxes);
 }
 
 /**
@@ -198,4 +200,18 @@ export function convertSolutionToList(sol) {
  */
 export function truncateDecimals(n, d) {
     return Math.floor(n * Math.pow(10,d)) / Math.pow(10,d);
+}
+
+/**
+ * Count the number of occurrences of an element in a 2D matrix.
+ */
+
+export function countOcurr(matrix, e) {
+  let count = 0;
+  for (let y = 0; y < matrix.length; y++) {
+    for (let x = 0; x < matrix[y].length; x++) {
+      if (matrix[y][x] == e) count++ 
+    }
+  }
+  return count;
 }

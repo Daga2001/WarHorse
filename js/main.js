@@ -33,7 +33,9 @@ else if (difficulty == '3') {
 }
 
 // tests: allows you to generate your own world
-const test = false;
+let initialnBoxes1 = 9;
+let initialnBoxes2 = 18;
+const test = true;
 
 //world
 /**
@@ -47,16 +49,19 @@ const test = false;
 let world = 
 [
     [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,3,0,0,0,0,0,0],
+    [0,0,3,3,3,0,0,3,0,0],
+    [0,0,0,3,0,3,3,0,3,0],
+    [0,0,3,0,0,3,0,3,3,3],
+    [0,0,2,0,0,0,0,3,3,0],
+    [5,3,0,0,3,0,0,0,0,0],
+    [0,0,0,0,0,4,0,4,1,0],
+    [0,0,0,0,0,4,4,4,0,0],
+    [0,0,0,4,4,0,0,0,4,4],
 ];
+
+console.log(util.countOcurr(world, 4));
+console.log(util.countOcurr(world, 3));
 
 let initWorld = util.deep_copy(world);
 
@@ -75,7 +80,7 @@ let h1 = {
     isTurn: false,
     possibleMovements: [],
     selectedMove: 0, // index of possibleMovements array
-    nBoxes: 1,
+    nBoxes: initialnBoxes1,
     nextMoves: [],
 }
 
@@ -86,7 +91,7 @@ let h2 = {
     isTurn: true,
     possibleMovements: [],
     selectedMove: 0, // index of possibleMovements array
-    nBoxes: 1,
+    nBoxes: initialnBoxes2,
     nextMoves: [],
 }
 
@@ -135,10 +140,11 @@ function paintSquare(x,y,width,height,color) {
  * Abstracts all posible movements from horse's position.
  * @param {Number} id_horse 
  * @param {Object} world
+ * @param {Object} save variable to determine whenever the possible movements must be stored in horse's array.
  * @returns List
  */
 
-function possibleMovements(id_horse, world) {
+function possibleMovements(id_horse, world, save) {
     let movements = [];
     let horse = {};
     if(typeof(id_horse) == "number") {
@@ -150,48 +156,48 @@ function possibleMovements(id_horse, world) {
         }
     }
     else if (typeof(id_horse) == "object") {
-        id_horse.possibleMovements = [];
+        if (save) id_horse.possibleMovements = [];
         horse = id_horse;
     }
     // 1
     if (horse.x-2 >= 0 && horse.y-1 >= 0 && (world[horse.y-1][horse.x-2] == 0 || world[horse.y-1][horse.x-2] == 5)) {
         movements.push(1);
-        horse.possibleMovements.push({ x: horse.x-2, y: horse.y-1, bonus: world[horse.y-1][horse.x-2] == 5, dir: 1});
+        if (save) horse.possibleMovements.push({ x: horse.x-2, y: horse.y-1, bonus: world[horse.y-1][horse.x-2] == 5, dir: 1});
     }
     // 2
     if (horse.x-1 >= 0 && horse.y-2 >= 0 && (world[horse.y-2][horse.x-1] == 0 || world[horse.y-2][horse.x-1] == 5)) {
         movements.push(2);
-        horse.possibleMovements.push({ x: horse.x-1, y: horse.y-2, bonus: world[horse.y-2][horse.x-1] == 5, dir: 2});
+        if (save) horse.possibleMovements.push({ x: horse.x-1, y: horse.y-2, bonus: world[horse.y-2][horse.x-1] == 5, dir: 2});
     }
     // 3
     if (horse.x+1 < world.length && horse.y-2 >= 0 && (world[horse.y-2][horse.x+1] == 0 || world[horse.y-2][horse.x+1] == 5)) {
         movements.push(3);
-        horse.possibleMovements.push({ x: horse.x+1, y: horse.y-2, bonus: world[horse.y-2][horse.x+1] == 5, dir: 3});
+        if (save) horse.possibleMovements.push({ x: horse.x+1, y: horse.y-2, bonus: world[horse.y-2][horse.x+1] == 5, dir: 3});
     }
     // 4
     if (horse.x+2 < world.length && horse.y-1 >= 0 && (world[horse.y-1][horse.x+2] == 0 || world[horse.y-1][horse.x+2] == 5)) {
         movements.push(4);
-        horse.possibleMovements.push({ x: horse.x+2, y: horse.y-1, bonus: world[horse.y-1][horse.x+2] == 5, dir: 4});
+        if (save) horse.possibleMovements.push({ x: horse.x+2, y: horse.y-1, bonus: world[horse.y-1][horse.x+2] == 5, dir: 4});
     }
     // 5
     if (horse.x+2 < world.length && horse.y+1 < world.length && (world[horse.y+1][horse.x+2] == 0 || world[horse.y+1][horse.x+2] == 5)) {
         movements.push(5);
-        horse.possibleMovements.push({ x: horse.x+2, y: horse.y+1, bonus: world[horse.y+1][horse.x+2] == 5, dir: 5});
+        if (save) horse.possibleMovements.push({ x: horse.x+2, y: horse.y+1, bonus: world[horse.y+1][horse.x+2] == 5, dir: 5});
     }
     // 6
     if (horse.x+1 < world.length && horse.y+2 < world.length && (world[horse.y+2][horse.x+1] == 0 || world[horse.y+2][horse.x+1] == 5)) {
         movements.push(6);
-        horse.possibleMovements.push({ x: horse.x+1, y: horse.y+2, bonus: world[horse.y+2][horse.x+1] == 5, dir: 6});
+        if (save) horse.possibleMovements.push({ x: horse.x+1, y: horse.y+2, bonus: world[horse.y+2][horse.x+1] == 5, dir: 6});
     }
     // 7
     if (horse.x-1 >= 0 && horse.y+2 < world.length && (world[horse.y+2][horse.x-1] == 0 || world[horse.y+2][horse.x-1] == 5)) {
         movements.push(7);
-        horse.possibleMovements.push({ x: horse.x-1, y: horse.y+2, bonus: world[horse.y+2][horse.x-1] == 5, dir: 7});
+        if (save) horse.possibleMovements.push({ x: horse.x-1, y: horse.y+2, bonus: world[horse.y+2][horse.x-1] == 5, dir: 7});
     }
     // 8
     if (horse.x-2 >= 0 && horse.y+1 < world.length && (world[horse.y+1][horse.x-2] == 0 || world[horse.y+1][horse.x-2] == 5)) {
         movements.push(8);
-        horse.possibleMovements.push({ x: horse.x-2, y: horse.y+1, bonus: world[horse.y+1][horse.x-2] == 5, dir: 8});
+        if (save) horse.possibleMovements.push({ x: horse.x-2, y: horse.y+1, bonus: world[horse.y+1][horse.x-2] == 5, dir: 8});
     }
     return movements;
 }
@@ -311,7 +317,7 @@ function makeWorld(world) {
  */
 
 function paintPossibleMovements(id_horse, world) {
-    possibleMovements(id_horse, world);
+    possibleMovements(id_horse, world, true);
     let horse = {};
     if(typeof(id_horse) == "number") {
         if (id_horse == 1) { 
@@ -660,6 +666,31 @@ export function minimax(initNode, depth, id_init_horse) {
         let nextNode = function(stack) {
             return stack.shift();
         }
+
+        /**
+         * Manages next horse's moves
+         */
+
+        let handleNextMoves = function(newNode, h, h_id) {
+            if (h_id == 1) {
+                newNode.horse1 = util.deep_copy(h);
+                // let c_pos_h1 = util.deep_copy(h.possibleMovements);
+                // let c_pos_h2 = util.deep_copy(newNode.horse2.possibleMovements);
+                newNode.horse1.nextMoves = possibleMovements(newNode.horse1, newNode.structure, false);
+                newNode.horse2.nextMoves = possibleMovements(newNode.horse2, newNode.structure, false);
+                // newNode.horse1.possibleMovements = util.deep_copy(c_pos_h1);
+                // newNode.horse2.possibleMovements = util.deep_copy(c_pos_h2);
+            }
+            else if (h_id == 2) {
+                newNode.horse2 = util.deep_copy(h);
+                // let c_pos_h1 = util.deep_copy(newNode.horse1.possibleMovements);
+                // let c_pos_h2 = util.deep_copy(h.possibleMovements);
+                newNode.horse1.nextMoves = possibleMovements(newNode.horse1, newNode.structure, false);
+                newNode.horse2.nextMoves = possibleMovements(newNode.horse2, newNode.structure, false);
+                // newNode.horse1.possibleMovements = util.deep_copy(c_pos_h1);
+                // newNode.horse2.possibleMovements = util.deep_copy(c_pos_h2);
+            }
+        }
     
         let body = function (parent, childrenType, horse, utility, h_id, field) {
             let i_children = [];
@@ -704,7 +735,7 @@ export function minimax(initNode, depth, id_init_horse) {
                 }
             }
 
-            let possibles = possibleMovements(horse, parent.structure);
+            let possibles = possibleMovements(horse, parent.structure, true);
             
             // 1
             if (possibles.includes(1)) {
@@ -731,24 +762,7 @@ export function minimax(initNode, depth, id_init_horse) {
                         horse2: util.deep_copy(parent.horse2),
                         id_horse: h_id,
                     };
-                if (h_id == 1) {
-                    newNode.horse1 = util.deep_copy(h);
-                    let c_pos_h1 = h.possibleMovements;
-                    let c_pos_h2 = util.deep_copy(newNode.horse2.possibleMovements);
-                    newNode.horse1.nextMoves = possibleMovements(newNode.horse1, newNode.structure);
-                    newNode.horse2.nextMoves = possibleMovements(newNode.horse2, newNode.structure);
-                    newNode.horse1.possibleMovements = util.deep_copy(c_pos_h1);
-                    newNode.horse2.possibleMovements = util.deep_copy(c_pos_h2);
-                }
-                else if (h_id == 2) {
-                    newNode.horse2 = util.deep_copy(h);
-                    let c_pos_h1 = util.deep_copy(newNode.horse1.possibleMovements);
-                    let c_pos_h2 = h.possibleMovements;
-                    newNode.horse1.nextMoves = possibleMovements(newNode.horse1, newNode.structure);
-                    newNode.horse2.nextMoves = possibleMovements(newNode.horse2, newNode.structure);
-                    newNode.horse1.possibleMovements = util.deep_copy(c_pos_h1);
-                    newNode.horse2.possibleMovements = util.deep_copy(c_pos_h2);
-                }
+                handleNextMoves(newNode, h, h_id);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -777,12 +791,7 @@ export function minimax(initNode, depth, id_init_horse) {
                         horse2: util.deep_copy(parent.horse2),
                         id_horse: h_id,
                     };
-                if (h_id == 1) {
-                    newNode.horse1 = util.deep_copy(h);
-                }
-                else if (h_id == 2) {
-                    newNode.horse2 = util.deep_copy(h);
-                }
+                handleNextMoves(newNode, h, h_id);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -811,12 +820,7 @@ export function minimax(initNode, depth, id_init_horse) {
                         horse2: util.deep_copy(parent.horse2),
                         id_horse: h_id,
                     };
-                if (h_id == 1) {
-                    newNode.horse1 = util.deep_copy(h);
-                }
-                else if (h_id == 2) {
-                    newNode.horse2 = util.deep_copy(h);
-                }
+                handleNextMoves(newNode, h, h_id);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -845,12 +849,7 @@ export function minimax(initNode, depth, id_init_horse) {
                         horse2: util.deep_copy(parent.horse2),
                         id_horse: h_id,
                     };
-                if (h_id == 1) {
-                    newNode.horse1 = util.deep_copy(h);
-                }
-                else if (h_id == 2) {
-                    newNode.horse2 = util.deep_copy(h);
-                }
+                handleNextMoves(newNode, h, h_id);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -879,12 +878,7 @@ export function minimax(initNode, depth, id_init_horse) {
                         horse2: util.deep_copy(parent.horse2),
                         id_horse: h_id,
                     };
-                if (h_id == 1) {
-                    newNode.horse1 = util.deep_copy(h);
-                }
-                else if (h_id == 2) {
-                    newNode.horse2 = util.deep_copy(h);
-                }
+                handleNextMoves(newNode, h, h_id);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -913,12 +907,7 @@ export function minimax(initNode, depth, id_init_horse) {
                         horse2: util.deep_copy(parent.horse2),
                         id_horse: h_id,
                     };
-                if (h_id == 1) {
-                    newNode.horse1 = util.deep_copy(h);
-                }
-                else if (h_id == 2) {
-                    newNode.horse2 = util.deep_copy(h);
-                }
+                handleNextMoves(newNode, h, h_id);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -947,12 +936,7 @@ export function minimax(initNode, depth, id_init_horse) {
                         horse2: util.deep_copy(parent.horse2),
                         id_horse: h_id,
                     };
-                if (h_id == 1) {
-                    newNode.horse1 = util.deep_copy(h);
-                }
-                else if (h_id == 2) {
-                    newNode.horse2 = util.deep_copy(h);
-                }
+                handleNextMoves(newNode, h, h_id);
                 queue.push(newNode);
                 tree.push(newNode);
             }
@@ -981,12 +965,7 @@ export function minimax(initNode, depth, id_init_horse) {
                         horse2: util.deep_copy(parent.horse2),
                         id_horse: h_id,
                     };
-                if (h_id == 1) {
-                    newNode.horse1 = util.deep_copy(h);
-                }
-                else if (h_id == 2) {
-                    newNode.horse2 = util.deep_copy(h);
-                }
+                handleNextMoves(newNode, h, h_id);
                 queue.push(newNode);
                 tree.push(newNode);
             }
