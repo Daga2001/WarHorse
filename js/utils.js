@@ -130,7 +130,7 @@ export function euclidianDistance(a, b){
  */
 
  export function calcHeuristic(node){
-  return (node.horse2.nBoxes - node.horse1.nBoxes) + (node.horse2.nextMoves.length);
+  return (node.horse2.nBoxes - node.horse1.nBoxes)/5 + (node.horse2.nextMoves.length-node.horse1.nextMoves.length)/8;
 }
 
 /**
