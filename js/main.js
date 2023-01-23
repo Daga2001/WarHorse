@@ -35,7 +35,7 @@ else if (difficulty == '3') {
 // tests: allows you to generate your own world
 let initialnBoxes1 = 1;
 let initialnBoxes2 = 1;
-const test = true;
+const test = false;
 
 //world
 /**
@@ -48,16 +48,16 @@ const test = true;
  */
 let world = 
 [
-    [0,0,0,0,0,4,3,4,3,4],
-    [0,0,0,0,0,4,3,4,3,4],
-    [0,0,0,2,5,4,3,0,3,4],
-    [0,0,0,0,5,4,3,4,3,4],
-    [0,0,0,0,5,4,3,4,1,4],
-    [0,0,0,0,0,4,3,4,3,4],
-    [0,0,0,0,0,4,3,4,3,4],
-    [0,0,0,0,0,4,3,4,3,4],
-    [0,0,0,0,0,4,3,4,3,4],
-    [0,0,0,0,0,4,3,4,3,4],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
 ];
 
 console.log(util.countOcurr(world, 4));
@@ -82,6 +82,7 @@ let h1 = {
     selectedMove: 0, // index of possibleMovements array
     nBoxes: initialnBoxes1,
     nextMoves: [],
+    nBonus: 0,
 }
 
 // Horse's player 2
@@ -93,6 +94,7 @@ let h2 = {
     selectedMove: 0, // index of possibleMovements array
     nBoxes: initialnBoxes2,
     nextMoves: [],
+    nBonus: 0,
 }
 
 // tree
@@ -697,6 +699,7 @@ export function minimax(initNode, depth, id_init_horse) {
             let move = 0;
             let evalBoxes = function (h, node) {
                 if (node[h.y][h.x] == 5) {
+                    h.nBonus += 1;
                     h.nBoxes += 1;
                     // up
                     if (h.y-1 >= 0) {
